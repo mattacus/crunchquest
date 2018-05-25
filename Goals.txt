@@ -1,0 +1,14 @@
+Project Goals:
+
+1.  Build a functioning UI in React, styled with Bulma CSS framework
+2.  Create mock data from basic CrunchBase get request.  
+    a.  Create MongoDB scheme
+    b.  Store JSON objects from get request in MongoDB
+3.  Display list of companies from the DB to the user in a list, when the user enters a location
+    a.  Implement GET request for location-based DB lookup on node server
+    b.  Serve data back to user, JUST company names
+4.  Company names, when clicked, should GET more details on the company from the server
+5.  Display company details in a nice little sidebar
+6.  If Crunchbase decides to be nice, get more company details and update schema
+7.  If time allows, get company locations onto a map and show points using Google Maps API
+8.  When map pin is clicked, show the card thing

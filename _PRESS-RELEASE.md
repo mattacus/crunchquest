@@ -1,4 +1,4 @@
-# Project Name #
+# CrunchQuest #
 
 <!-- 
 > This material was originally posted [here](http://www.quora.com/What-is-Amazons-approach-to-product-development-and-product-management). It is reproduced here for posterities sake.
@@ -17,28 +17,28 @@ Once the project moves into development, the press release can be used as a touc
  -->
  
 ## Heading ##
-  > Name the product in a way the reader (i.e. your target customers) will understand.
+  > CrunchQuest: Explore the companies in your neighborhood.
 
 ## Sub-Heading ##
-  > Describe who the market for the product is and what benefit they get. One sentence only underneath the title.
+  > For job seekers and industry explorers who just want an unbiased lay of the land
 
 ## Summary ##
-  > Give a summary of the product and the benefit. Assume the reader will not read anything else so make this paragraph good.
+  > CrunchQuest shows you companies nearby and tells you a little bit about them.  Just the basic facts, not an overwhelming firehose of information.  Like a neighborhood BBQ, but with companies.
 
 ## Problem ##
-  > Describe the problem your product solves.
+  > There's a lot of detailed info out there about companies, as well as open job listings.  But what if you want to just take a look around you first before firing off a bunch of resumes?
 
 ## Solution ##
-  > Describe how your product elegantly solves the problem.
+  > CrunchQuest puts (items in a list => eventually, markers on a map) to show you basic company info in a card-like interface from Crunchbase on companies around you.
 
 ## Quote from You ##
-  > A quote from a spokesperson in your company.
+  > "Why doesn't Crunchbase just give you like a map of companies near a location?   Maybe I should go make that for my MVP or something."
 
 ## How to Get Started ##
-  > Describe how easy it is to get started.
+  > Just load it up, enter a location, and start clicking.
 
 ## Customer Quote ##
-  > Provide a quote from a hypothetical customer that describes how they experienced the benefit.
+  > Maps?  With companies on it??  YEEAAAHHHH!!!
 
 ## Closing and Call to Action ##
-  > Wrap it up and give pointers where the reader should go next.
+  > What are you waiting for?  Just try it out already!
