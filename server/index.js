@@ -25,14 +25,18 @@ app.get('/companies', (req, res) => {
     },
   })
     .then((result) => {
-      let companyInfo = db.mongoSave(result.data);
-      res.header(200).send(JSON.stringify(companyInfo));
+      db.mongoSave(result.data)
+        .then(() => {
+          res.header(200).send(JSON.stringify('Success writing db'));
+        })
+        .catch((err) => {
+          throw new Error('Error writing to db: ', err.message);
+        });
     })
     .catch((err) => {
-      console.log('Error retrieving from crunchbase: ', err.response);
+      console.log('Error: ', err);
       res.header(400).send(JSON.stringify('Error retrieving from crunchbase'));
-    })
-
+    });
 });
 
 app.listen(PORT, () => {

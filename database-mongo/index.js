@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const axios = require('axios');
 
 mongoose.connect('mongodb://localhost/crunchquest');
 
@@ -14,7 +15,7 @@ db.once('open', () => {
 
 const crunchbaseSchema = new mongoose.Schema({
   name: String,
-  profile_image: { data: Buffer, contentType: String },
+  profile_image: String,
   short_description: String,
   homepage_url: String,
   linkedin_url: String,
@@ -36,7 +37,7 @@ let mongoSave = (rawData) => {
     };
     return formatted;
   });
-  return companyList;
+  return Company.insertMany(companyList);
 };
 
 module.exports.mongoSave = mongoSave;
