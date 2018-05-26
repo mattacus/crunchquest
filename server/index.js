@@ -17,17 +17,17 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
 app.use(bodyParser.json());
 
-app.get('/companies', (req, res) => {
+app.post('/download', (req, res) => {
   axios.get('https://api.crunchbase.com/v3.1/odm-organizations', {
     params: {
-      locations: 'Austin',
+      locations: req.body.location,
       user_key: process.env.CRUNCHBASE_KEY,
     },
   })
     .then((result) => {
       db.mongoSave(result.data)
         .then(() => {
-          res.header(200).send(JSON.stringify('Success writing db'));
+          res.header(201).send(JSON.stringify('Success writing companies to db'));
         })
         .catch((err) => {
           throw new Error('Error writing to db: ', err.message);
@@ -35,7 +35,17 @@ app.get('/companies', (req, res) => {
     })
     .catch((err) => {
       console.log('Error: ', err);
-      res.header(400).send(JSON.stringify('Error retrieving from crunchbase'));
+      res.header(404).send(JSON.stringify('Error retrieving from crunchbase'));
+    });
+});
+
+app.get('/companies', (req, res) => {
+  db.companies.find().exec()
+    .then((results) => {
+      res.header(200).send(JSON.stringify(results));
+    })
+    .catch((err) => {
+      console.log('Error fetching companies from db', err.message);
     });
 });
 

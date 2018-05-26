@@ -41,3 +41,4 @@ let mongoSave = (rawData) => {
 };
 
 module.exports.mongoSave = mongoSave;
+module.exports.companies = Company;
