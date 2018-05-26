@@ -1,8 +1,8 @@
+import { Container, Box } from 'bloomer';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import axios from 'axios';
 import List from './components/List.jsx';
-
 
 class App extends React.Component {
   constructor(props) {
@@ -34,7 +34,9 @@ class App extends React.Component {
   render() {
     return (
     <div>
-      <h1>Hello, World!</h1>
+        <Container>
+          <Box>Hello World!</Box>
+        </Container>
       <List items={this.state.items}/>
     </div>
     );
