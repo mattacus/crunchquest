@@ -28,6 +28,5 @@ app.get('/items', (req, res) => {
 
 app.listen(PORT, () => {
   console.log('listening on port 3000!');
-  console.log('SECRET MESSAGE: ', process.env.SECRET_MESSAGE);
 });
 
