@@ -14,7 +14,7 @@ class App extends React.Component {
 
   componentDidMount() {
     console.log(this);
-    axios.get('/items')
+    axios.get('/companies')
       .then((res) => {
         console.log('Got response from server: ', res.data);
       })

@@ -1,11 +1,12 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const db = require('../database-mongo');
 const axios = require('axios');
 
 const PORT = process.env.PORT || 3000;
 require('dotenv').config();
 
-// const items = require('../database-mongo');
+const items = require('../database-mongo');
 
 const app = express();
 
@@ -16,18 +17,19 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
 app.use(bodyParser.json());
 
-app.get('/items', (req, res) => {
+app.get('/companies', (req, res) => {
   axios.get('https://api.crunchbase.com/v3.1/odm-organizations', {
     params: {
       locations: 'Austin',
       user_key: process.env.CRUNCHBASE_KEY,
-    }
+    },
   })
     .then((result) => {
-      res.header(200).send(JSON.stringify(result.data));
+      let companyInfo = db.mongoSave(result.data);
+      res.header(200).send(JSON.stringify(companyInfo));
     })
     .catch((err) => {
-      console.log('Error retrieving from crunchbase');
+      console.log('Error retrieving from crunchbase: ', err.response);
       res.header(400).send(JSON.stringify('Error retrieving from crunchbase'));
     })
 

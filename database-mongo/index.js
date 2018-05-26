@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-mongoose.connect('mongodb://localhost/test');
+mongoose.connect('mongodb://localhost/crunchquest');
 
 const db = mongoose.connection;
 
@@ -12,21 +12,31 @@ db.once('open', () => {
   console.log('mongoose connected successfully');
 });
 
-const itemSchema = mongoose.Schema({
-  quantity: Number,
-  description: String,
+const crunchbaseSchema = new mongoose.Schema({
+  name: String,
+  profile_image: { data: Buffer, contentType: String },
+  short_description: String,
+  homepage_url: String,
+  linkedin_url: String,
 });
 
-const Item = mongoose.model('Item', itemSchema);
+const Company = mongoose.model('Company', crunchbaseSchema);
 
-const selectAll = function (callback) {
-  Item.find({}, (err, items) => {
-    if (err) {
-      callback(err, null);
-    } else {
-      callback(null, items);
-    }
+let mongoSave = (rawData) => {
+  // format of crunchbase data
+  let companyList = rawData.data.items;
+  // map to mongo schema
+  companyList = companyList.map((company) => {
+    const formatted = {
+      name: company.name,
+      profile_image: company.properties.profile_image_url, // TODO: replace this!
+      short_description: company.properties.short_description,
+      homepage_url: company.properties.homepage_url,
+      linkedin_url: company.properties.linkedin_url,
+    };
+    return formatted;
   });
+  return companyList;
 };
 
-module.exports.selectAll = selectAll;
+module.exports.mongoSave = mongoSave;
