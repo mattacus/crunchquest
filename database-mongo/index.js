@@ -14,7 +14,7 @@ db.once('open', () => {
 });
 
 const crunchbaseSchema = new mongoose.Schema({
-  name: String,
+  name: { type: String, index: { unique: true } },
   profile_image: String,
   short_description: String,
   homepage_url: String,
@@ -29,7 +29,7 @@ let mongoSave = (rawData) => {
   // map to mongo schema
   companyList = companyList.map((company) => {
     const formatted = {
-      name: company.name,
+      name: company.properties.name,
       profile_image: company.properties.profile_image_url, // TODO: replace this!
       short_description: company.properties.short_description,
       homepage_url: company.properties.homepage_url,

@@ -13,13 +13,21 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    console.log(this);
+    // Download new company data
+    // axios.post('/download', { location: 'Austin' })
+    //   .then((res) => {
+    //     console.log(res.data);
+    //   })
+    //   .catch((err) => {
+    //     console.log('Error requesting new company data: ', err);
+    //   });
+    
     axios.get('/companies')
       .then((res) => {
         console.log('Got response from server: ', res.data);
       })
       .catch((err) => {
-        console.log('Uhoh, there was an error');
+        console.log('Error retrieving company info from db: ', err);
       });
   }
 

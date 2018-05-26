@@ -18,6 +18,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.post('/download', (req, res) => {
+  console.log('Querying location: ', req.body.location);
   axios.get('https://api.crunchbase.com/v3.1/odm-organizations', {
     params: {
       locations: req.body.location,
@@ -27,10 +28,12 @@ app.post('/download', (req, res) => {
     .then((result) => {
       db.mongoSave(result.data)
         .then(() => {
+          console.log('Successfully pulled data into db');
           res.header(201).send(JSON.stringify('Success writing companies to db'));
         })
         .catch((err) => {
-          throw new Error('Error writing to db: ', err.message);
+          console.log('Error writing to db: ', err.message);
+          res.header(500).send(JSON.stringify(err.message));          
         });
     })
     .catch((err) => {
