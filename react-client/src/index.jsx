@@ -1,7 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import $ from 'jquery';
+import axios from 'axios';
 import List from './components/List.jsx';
+
 
 class App extends React.Component {
   constructor(props) {
@@ -12,17 +13,13 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    // $.ajax({
-    //   url: '/items', 
-    //   success: (data) => {
-    //     this.setState({
-    //       items: data
-    //     })
-    //   },
-    //   error: (err) => {
-    //     console.log('err', err);
-    //   }
-    // });
+    axios.get('items')
+      .then(res => {
+        console.log('Got from server: ', res.data);
+      })
+      .catch(err => {
+        console.log('Uhoh, there was an error')
+      });
   }
 
   render () {
