@@ -1,5 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+
+const PORT = process.env.PORT || 3000;
 // UNCOMMENT THE DATABASE YOU'D LIKE TO USE
 // var items = require('../database-mysql');
 // const items = require('../database-mongo');
@@ -23,7 +25,7 @@ app.get('/items', (req, res) => {
   });
 });
 
-app.listen(3000, () => {
+app.listen(PORT, () => {
   console.log('listening on port 3000!');
 });
 
