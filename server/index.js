@@ -1,7 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-
 const PORT = process.env.PORT || 3000;
+require('dotenv').config()
+
 // UNCOMMENT THE DATABASE YOU'D LIKE TO USE
 // var items = require('../database-mysql');
 // const items = require('../database-mongo');
@@ -27,5 +28,6 @@ app.get('/items', (req, res) => {
 
 app.listen(PORT, () => {
   console.log('listening on port 3000!');
+  console.log('SECRET MESSAGE: ', process.env.SECRET_MESSAGE);
 });
 
