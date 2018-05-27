@@ -6,7 +6,7 @@ import {
   Icon, Title, Column, Columns, Notification,
 } from 'bloomer';
 // import './style.scss';
-import List from './components/List.jsx';
+import CompanyList from './components/CompanyList.jsx';
 
 class App extends React.Component {
   constructor(props) {
@@ -28,7 +28,10 @@ class App extends React.Component {
 
     axios.get('/companies')
       .then((res) => {
-        console.log('Got response from server: ', res.data);
+        console.log('Got response from server!');
+        this.setState({ items: res.data }, () => {
+          console.log(this.state.items);
+        });
       })
       .catch((err) => {
         console.log('Error retrieving company info from db: ', err);
@@ -50,6 +53,7 @@ class App extends React.Component {
         <Columns isCentered>
           <Column isSize='2/3'>
             <Notification isColor='success' hasTextAlign='centered'> Company List Column </Notification>
+            <CompanyList items={this.state.items} />
           </Column>
           <Column isSize='1/3'>
             <Notification isColor='info' hasTextAlign='centered'> Company Info Column </Notification>
