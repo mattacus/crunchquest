@@ -1,9 +1,11 @@
 import React from 'react';
+import { MenuLink } from 'bloomer';
+
 
 const CompanyListItem = props => (
-  <div>
-    {props.item.name}
-  </div>
+    <li key={props.item._id}>
+      <MenuLink>{props.item.name}</MenuLink>
+    </li>
 );
 
 export default CompanyListItem;

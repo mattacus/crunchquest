@@ -7,12 +7,14 @@ import {
 } from 'bloomer';
 // import './style.scss';
 import CompanyList from './components/CompanyList.jsx';
+import CompanyInfo from './components/CompanyInfo.jsx';
 
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       items: [],
+      first: {},
     };
   }
 
@@ -29,12 +31,12 @@ class App extends React.Component {
     axios.get('/companies')
       .then((res) => {
         console.log('Got response from server!');
-        this.setState({ items: res.data }, () => {
-          console.log(this.state.items);
+        this.setState({ items: res.data, first: res.data[0] }, () => {
+          console.log(this.state.first);
         });
       })
       .catch((err) => {
-        console.log('Error retrieving company info from db: ', err);
+        console.log(err);
       });
   }
 
@@ -51,12 +53,13 @@ class App extends React.Component {
           </HeroBody>
         </Hero>
         <Columns isCentered>
-          <Column isSize='2/3'>
+          <Column isSize='1/3'>
             <Notification isColor='success' hasTextAlign='centered'> Company List Column </Notification>
             <CompanyList items={this.state.items} />
           </Column>
-          <Column isSize='1/3'>
+          <Column isSize='2/3'>
             <Notification isColor='info' hasTextAlign='centered'> Company Info Column </Notification>
+            <CompanyInfo item={this.state.first} />
           </Column>
         </Columns>
       </div>

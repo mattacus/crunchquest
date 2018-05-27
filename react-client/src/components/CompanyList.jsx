@@ -1,12 +1,14 @@
 import React from 'react';
+import { Menu, MenuLabel, MenuLink, MenuList } from 'bloomer';
 import CompanyListItem from './CompanyListItem.jsx';
 
 const CompanyList = props => (
-  <div>
-    <h4> CompanyList Component </h4>
-    There are { props.items.length } items.
-    {props.items.map(item => <CompanyListItem item={item}/>)}
-  </div>
+  <Menu>
+    <MenuLabel>Companies</MenuLabel>
+    <MenuList>
+      {props.items.map(item => <CompanyListItem item={item} />)}
+    </MenuList>
+  </Menu>
 );
 
 export default CompanyList;
