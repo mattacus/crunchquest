@@ -1,7 +1,8 @@
-import { Container, Box } from 'bloomer';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import axios from 'axios';
+import { Container, Box, Columns, Column, Button } from 'bloomer';
+// import './style.scss';
 import List from './components/List.jsx';
 
 class App extends React.Component {
@@ -34,9 +35,17 @@ class App extends React.Component {
   render() {
     return (
     <div>
-        <Container>
-          <Box>Hello World!</Box>
-        </Container>
+        <Columns>
+          <Button isColor='info' render={
+            props => <Column hasTextAlign='centered'><p {...props}>Button</p></Column>
+          } />
+          <Column>
+            <Button isColor='warning' isLoading>isLoading={true}</Button>
+          </Column>
+          <Column hasTextAlign='centered'>
+            <Button isColor='success' isOutlined>isOutlined</Button>
+          </Column>
+        </Columns>
       <List items={this.state.items}/>
     </div>
     );
