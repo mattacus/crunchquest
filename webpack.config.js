@@ -22,8 +22,8 @@ module.exports = {
       },
       {
         test: /\.sass$/,
-        loader: "sass-loader"
-      }
+        loader: 'sass-loader',
+      },
     ],
   },
 };

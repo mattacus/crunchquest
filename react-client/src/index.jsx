@@ -1,7 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import axios from 'axios';
-import { Container, Box, Columns, Column, Button } from 'bloomer';
+import {
+  Container, Box, Hero, HeroHeader, HeroBody, Nav, NavLeft, NavRight, NavCenter, NavItem,
+  Icon, Title, Column, Columns, Notification,
+} from 'bloomer';
 // import './style.scss';
 import List from './components/List.jsx';
 
@@ -22,7 +25,7 @@ class App extends React.Component {
     //   .catch((err) => {
     //     console.log('Error requesting new company data: ', err);
     //   });
-    
+
     axios.get('/companies')
       .then((res) => {
         console.log('Got response from server: ', res.data);
@@ -34,20 +37,25 @@ class App extends React.Component {
 
   render() {
     return (
-    <div>
-        <Columns>
-          <Button isColor='info' render={
-            props => <Column hasTextAlign='centered'><p {...props}>Button</p></Column>
-          } />
-          <Column>
-            <Button isColor='warning' isLoading>isLoading={true}</Button>
+      <div>
+        <Hero isColor='dark' isSize='small' isBold='true'>
+          <HeroHeader>
+          </HeroHeader>
+          <HeroBody>
+            <Container hasTextAlign='centered'>
+              <Title>CrunchQuest</Title>
+            </Container>
+          </HeroBody>
+        </Hero>
+        <Columns isCentered>
+          <Column isSize='2/3'>
+            <Notification isColor='success' hasTextAlign='centered'> Company List Column </Notification>
           </Column>
-          <Column hasTextAlign='centered'>
-            <Button isColor='success' isOutlined>isOutlined</Button>
+          <Column isSize='1/3'>
+            <Notification isColor='info' hasTextAlign='centered'> Company Info Column </Notification>
           </Column>
         </Columns>
-      <List items={this.state.items}/>
-    </div>
+      </div>
     );
   }
 }
