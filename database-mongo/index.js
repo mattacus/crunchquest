@@ -30,7 +30,7 @@ let mongoSave = (rawData) => {
   companyList = companyList.map((company) => {
     const formatted = {
       name: company.properties.name,
-      profile_image: company.properties.profile_image_url, // TODO: replace this!
+      profile_image: company.properties.profile_image_url,
       short_description: company.properties.short_description,
       homepage_url: company.properties.homepage_url,
       linkedin_url: company.properties.linkedin_url,

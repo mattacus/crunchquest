@@ -2,8 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import axios from 'axios';
 import {
-  Container, Box, Hero, HeroHeader, HeroBody, Nav, NavLeft, NavRight, NavCenter, NavItem,
-  Icon, Title, Column, Columns, Notification,
+  Container, Content, Box, Hero, HeroHeader, HeroBody, Nav, NavLeft, NavRight, NavCenter, NavItem, Button,
+  Icon, Title, Subtitle,Column, Columns, Notification, Level, LevelItem, LevelLeft, LevelRight,
 } from 'bloomer';
 
 // import fs from 'fs';
@@ -22,19 +22,22 @@ class App extends React.Component {
     this.handleCompanyClick = this.handleCompanyClick.bind(this);
   }
 
-  componentDidMount() {
+  refreshDatabase() {
     // Download new company data
-    // axios.post('/download', { location: 'Austin' })
-    //   .then((res) => {
-    //     console.log(res.data);
-    //   })
-    //   .catch((err) => {
-    //     console.log('Error requesting new company data: ', err);
-    //   });
+    axios.post('/download', { location: 'Austin' })
+      .then((res) => {
+        console.log(res.data);
+        this.getCompanies();
+      })
+      .catch((err) => {
+        console.log('Error requesting new company data: ', err);
+      });
+  }
 
+  getCompanies() {
     axios.get('/companies')
       .then((res) => {
-        console.log('Got companies from database!');
+        console.log('Got companies from database');
         // axios.get('/googleMapsInfo')
         //   .then((image) => {
         //     console.log(image.data);
@@ -44,12 +47,17 @@ class App extends React.Component {
         //     throw err;
         //   });
         this.setState({ items: res.data, selectedCompany: res.data[0] }, () => {
-          console.log(this.state.selectedCompany);
+          console.log('Companies loaded into app state');
         });
       })
       .catch((err) => {
         console.log(err);
       });
+  }
+
+  componentDidMount() {
+    console.log('App mounted');
+    this.getCompanies();
   }
 
   handleCompanyClick(company) {
@@ -63,9 +71,17 @@ class App extends React.Component {
           <HeroHeader>
           </HeroHeader>
           <HeroBody>
-            <Container hasTextAlign='centered'>
-              <Title>CrunchQuest</Title>
-            </Container>
+              <Level>
+                <LevelLeft>
+                  <Content>
+                    <Title>CrunchQuest</Title>
+                    <Subtitle isSize={6}><em>alpha</em></Subtitle>
+                  </Content>
+                </LevelLeft>
+                <LevelRight>
+                  <Button isColor='light' isOutlined>Refresh Database</Button>
+                </LevelRight>
+              </Level>
           </HeroBody>
         </Hero>
         <Columns isCentered>

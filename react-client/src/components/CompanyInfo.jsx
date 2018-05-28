@@ -11,28 +11,34 @@ const CompanyInfo = props => (
     <Card>
       <CardHeader>
         <CardHeaderTitle>
-          {props.item.name}
+          {`${props.item.name} Info Card`}
         </CardHeaderTitle>
         <CardHeaderIcon>
           <Icon className="fa fa-angle-down" />
         </CardHeaderIcon>
       </CardHeader>
       <CardImage>
-        <Level>
+        <Box><Level>
           <LevelItem>
             <Image isSize='128x128' src={props.item.profile_image} />
           </LevelItem>
-        </Level>
+        </Level></Box>
       </CardImage>
       <CardContent>
         <Media>
           <MediaContent>
-            <Title isSize={2}>{props.item.name}</Title>
             <Box>
+              <Title isSize={4}>{props.item.name}</Title>
               <Content>
                 <p>{props.item.short_description}</p>
-                <a href={props.item.homepage_url}>{props.item.homepage_url}</a><br />
-                <a href={props.item.linkedin_url}>{props.item.linkedin_url}</a>
+                <p>
+                  <strong>Homepage:&#8195;</strong>
+                  <a href={props.item.homepage_url}>{props.item.homepage_url || '(Not provided)'}</a>
+                </p>
+                <p>
+                  <strong>LinkedIn:&#8195;</strong>
+                  <a href={props.item.linkedin_url}>{props.item.linkedin_url || '(Not provided)'}</a>
+                </p>
               </Content>
             </Box>
           </MediaContent>
