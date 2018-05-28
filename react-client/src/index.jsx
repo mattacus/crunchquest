@@ -16,9 +16,10 @@ class App extends React.Component {
     super(props);
     this.state = {
       items: [],
-      first: {},
+      selectedCompany: {},
       testPhoto: '',
     };
+    this.handleCompanyClick = this.handleCompanyClick.bind(this);
   }
 
   componentDidMount() {
@@ -42,13 +43,17 @@ class App extends React.Component {
         //     console.log(err);
         //     throw err;
         //   });
-        this.setState({ items: res.data, first: res.data[0] }, () => {
-          console.log(this.state.first);
+        this.setState({ items: res.data, selectedCompany: res.data[0] }, () => {
+          console.log(this.state.selectedCompany);
         });
       })
       .catch((err) => {
         console.log(err);
       });
+  }
+
+  handleCompanyClick(company) {
+    this.setState({ selectedCompany: company });
   }
 
   render() {
@@ -66,11 +71,11 @@ class App extends React.Component {
         <Columns isCentered>
           <Column isSize='1/3'>
             <Notification isColor='success' hasTextAlign='centered'> Company List Column </Notification>
-            <CompanyList items={this.state.items} />
+            <CompanyList items={this.state.items} handleCompanyClick={this.handleCompanyClick} />
           </Column>
           <Column isSize='2/3'>
             <Notification isColor='info' hasTextAlign='centered'> Company Info Column </Notification>
-            <CompanyInfo item={this.state.first} />
+            <CompanyInfo item={this.state.selectedCompany} />
           </Column>
         </Columns>
       </div>

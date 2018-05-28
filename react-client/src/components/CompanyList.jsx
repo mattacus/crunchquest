@@ -6,7 +6,8 @@ const CompanyList = props => (
   <Menu>
     <MenuLabel>Companies</MenuLabel>
     <MenuList>
-      {props.items.map(item => <CompanyListItem item={item} />)}
+      {props.items.map(item => <CompanyListItem item={item} 
+      handleCompanyClick={props.handleCompanyClick}/>)}
     </MenuList>
   </Menu>
 );
