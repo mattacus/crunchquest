@@ -1,8 +1,9 @@
 const mongoose = require('mongoose');
 const axios = require('axios');
+require('dotenv').config();
 
-mongoose.connect('mongodb://localhost/crunchquest');
-
+console.log('Using database: ', process.env.MONGODB_URI)
+mongoose.connect(process.env.MONGODB_URI);
 const db = mongoose.connection;
 
 db.on('error', () => {
