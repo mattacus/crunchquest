@@ -106,7 +106,7 @@ class App extends React.Component {
               </Level>
           </HeroBody>
         </Hero>
-        <Columns isCentered className='is-desktop'>
+        <Columns isCentered >
           <Column isSize={{ mobile: 6, default: 4 }}>
               <CompanyList items={this.state.page} 
               selectedCompany={this.state.selectedCompany}
