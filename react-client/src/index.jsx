@@ -9,22 +9,23 @@ import {
   Level, LevelItem, LevelLeft, LevelRight,
 } from 'bloomer';
 
-// import fs from 'fs';
-// import path from 'path';
 import CompanyList from './components/CompanyList.jsx';
 import CompanyInfo from './components/CompanyInfo.jsx';
+import Pagination from './components/Pagination.jsx';
 
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       items: [],
+      page: [],
       selectedCompany: {},
       testPhoto: '',
     };
     this.handleCompanyClick = this.handleCompanyClick.bind(this);
     this.refreshDatabase = this.refreshDatabase.bind(this);
     this.getCompanies = this.getCompanies.bind(this);
+    this.onChangePage = this.onChangePage.bind(this);
   }
 
   refreshDatabase() {
@@ -73,6 +74,10 @@ class App extends React.Component {
     this.setState({ selectedCompany: company });
   }
 
+  onChangePage(pageOfItems) {
+    this.setState({ page: pageOfItems });
+  }
+
   render() {
     return (
       <div>
@@ -97,11 +102,16 @@ class App extends React.Component {
         </Hero>
         <Columns isCentered>
           <Column isSize='1/3'>
-            <CompanyList items={this.state.items} 
-            selectedCompany={this.state.selectedCompany}
-            handleCompanyClick={this.handleCompanyClick} />
+            <Box>
+              <CompanyList items={this.state.page} 
+              selectedCompany={this.state.selectedCompany}
+              handleCompanyClick={this.handleCompanyClick} />
+              <Container isFluid style={{ marginTop: 10 }}>
+                <Pagination items={this.state.items} onChangePage={this.onChangePage} />
+              </Container>
+            </Box>
           </Column>
-          <Column isSize='2/3'>
+          <Column >
             <CompanyInfo item={this.state.selectedCompany} />
           </Column>
         </Columns>
