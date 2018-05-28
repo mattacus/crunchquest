@@ -107,14 +107,14 @@ class Pagination extends React.Component {
       <nav className="pagination" role="navigation">
         <ul className="pagination pagination-list" >
           <li className={pager.currentPage === 1 ? 'disabled' : ''}>
-            <a className="pagination-previous" onClick={() => this.setPage(pager.currentPage - 1)}>Prev</a>
+            <a className="pagination-previous" onClick={() => this.setPage(pager.currentPage - 1)}>{'<'}</a>
           </li>
           {pager.pages.map((page, index) =>
             <li key={index} className={pager.currentPage === page ? 'active' : ''}>
               <a className="pagination-link"onClick={() => this.setPage(page)}>{page}</a>
             </li>)}
           <li className={pager.currentPage === pager.totalPages ? 'disabled' : ''}>
-            <a className="pagination-next" onClick={() => this.setPage(pager.currentPage + 1)}>Next</a>
+            <a className="pagination-next" onClick={() => this.setPage(pager.currentPage + 1)}>{'>'}</a>
           </li>
         </ul>
       </nav>

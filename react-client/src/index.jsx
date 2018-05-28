@@ -13,6 +13,9 @@ import CompanyList from './components/CompanyList.jsx';
 import CompanyInfo from './components/CompanyInfo.jsx';
 import Pagination from './components/Pagination.jsx';
 
+// hardcoded location, for now
+const searchLocation = 'Austin';
+
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -30,7 +33,7 @@ class App extends React.Component {
 
   refreshDatabase() {
     // Download new company data
-    axios.post('/download', { location: 'Austin' })
+    axios.post('/download', { location: searchLocation })
       .then((res) => {
         console.log(res.data);
       })
@@ -93,25 +96,26 @@ class App extends React.Component {
                   </Content>
                 </LevelLeft>
                 <LevelRight>
-                  <Button isColor='light' isOutlined
-                  onClick={this.getCompanies}>
-                  Refresh Companies</Button>
+                  <Content>
+                    <Button isColor='light' isOutlined
+                    onClick={this.getCompanies}>
+                    Refresh Companies</Button>
+                    <Subtitle isSize={6}><em>{`Currently viewing: ${searchLocation}`}</em></Subtitle>
+                  </Content>
                 </LevelRight>
               </Level>
           </HeroBody>
         </Hero>
-        <Columns isCentered>
-          <Column isSize='1/3'>
-            <Box>
+        <Columns isCentered className='is-desktop'>
+          <Column isSize={{ mobile: 6, default: 4 }}>
               <CompanyList items={this.state.page} 
               selectedCompany={this.state.selectedCompany}
               handleCompanyClick={this.handleCompanyClick} />
               <Container isFluid style={{ marginTop: 10 }}>
                 <Pagination items={this.state.items} onChangePage={this.onChangePage} />
               </Container>
-            </Box>
           </Column>
-          <Column >
+          <Column isSize={{ mobile: 6, default: 8 }}>
             <CompanyInfo item={this.state.selectedCompany} />
           </Column>
         </Columns>
