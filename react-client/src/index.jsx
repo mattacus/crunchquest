@@ -31,7 +31,6 @@ class App extends React.Component {
     axios.post('/download', { location: 'Austin' })
       .then((res) => {
         console.log(res.data);
-        this.getCompanies();
       })
       .catch((err) => {
         console.log('Error requesting new company data: ', err);
