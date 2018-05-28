@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const db = require('../database-mongo');
+const fs = require('fs');
 const axios = require('axios');
 
 const PORT = process.env.PORT || 3000;
@@ -49,6 +50,28 @@ app.get('/companies', (req, res) => {
     })
     .catch((err) => {
       console.log('Error fetching companies from db', err.message);
+      res.header(500).send(JSON.stringify(err.message));
+    });
+});
+
+app.get('/googleMapsInfo', (req, res) => {
+  // google maps API test
+  axios.get('https://maps.googleapis.com/maps/api/place/photo', {
+    params: {
+      maxWidth: 400,
+      photoreference: 'CmRaAAAAu1OI71Feg5NFCFp8_4YYlGwkUaZAqAJeMokzT56HGYfVgnbzYXVr36-9vD8j2GWlHFpADvKCVjMy8QZOmGRqqQ_y5g_uFOtikJll7YsxkRMqghgQXYToLeLO7Az-m3N1EhDjr8VbVmrtIWEVH9CpeDFnGhSkwlsimFfN7cBTiZjMXAyQ-dcfOQ',
+      key: process.env.GOOGLE_MAPS_KEY,
+    },
+    // responseType: 'image/jpeg',
+  })
+    .then((results) => {
+      // console.log(results.data);
+      // results.data.pipe(fs.createWriteStream('test.jpg'))
+      res.header(200).send('Server will write image data');
+    })
+    .catch((err) => {
+      console.log('Error fetching image data', err);
+      res.header(400).send(err);      
     });
 });
 

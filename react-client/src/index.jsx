@@ -5,7 +5,9 @@ import {
   Container, Box, Hero, HeroHeader, HeroBody, Nav, NavLeft, NavRight, NavCenter, NavItem,
   Icon, Title, Column, Columns, Notification,
 } from 'bloomer';
-// import './style.scss';
+
+// import fs from 'fs';
+// import path from 'path';
 import CompanyList from './components/CompanyList.jsx';
 import CompanyInfo from './components/CompanyInfo.jsx';
 
@@ -15,6 +17,7 @@ class App extends React.Component {
     this.state = {
       items: [],
       first: {},
+      testPhoto: '',
     };
   }
 
@@ -30,7 +33,15 @@ class App extends React.Component {
 
     axios.get('/companies')
       .then((res) => {
-        console.log('Got response from server!');
+        console.log('Got companies from database!');
+        // axios.get('/googleMapsInfo')
+        //   .then((image) => {
+        //     console.log(image.data);
+        //   })
+        //   .catch((err) => {
+        //     console.log(err);
+        //     throw err;
+        //   });
         this.setState({ items: res.data, first: res.data[0] }, () => {
           console.log(this.state.first);
         });

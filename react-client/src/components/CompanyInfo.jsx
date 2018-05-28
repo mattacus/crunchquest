@@ -2,7 +2,7 @@ import React from 'react';
 import {
   Box, Card, CardHeader, CardHeaderTitle, CardHeaderIcon,
   CardImage, Image, CardContent, Media, MediaContent, MediaLeft, MediaRight,
-  Title, Subtitle, Content, Icon,
+  Title, Subtitle, Content, Icon, Level, LevelItem,
 } from 'bloomer';
 
 const CompanyInfo = props => (
@@ -18,7 +18,20 @@ const CompanyInfo = props => (
         </CardHeaderIcon>
       </CardHeader>
       <CardImage>
-        <Image isRatio='4:3' src={props.item.profile_image} />
+        <Level>
+          <LevelItem>
+            <Image isSize='128x128' src={props.item.profile_image} />
+          </LevelItem>
+          <LevelItem>
+            <Image isSize='128x128' src={props.item.profile_image} />
+          </LevelItem>
+          <LevelItem>
+            <Image isSize='128x128' src={props.item.profile_image} />
+          </LevelItem>
+          <LevelItem>
+            <Image isSize='128x128' src={props.item.profile_image} />
+          </LevelItem>
+        </Level>
       </CardImage>
       <CardContent>
         <Media>
