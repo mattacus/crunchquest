@@ -25,21 +25,19 @@ const CompanyInfo = props => (
           <LevelItem>
             <Image isSize='128x128' src={props.item.profile_image} />
           </LevelItem>
-          <LevelItem>
-            <Image isSize='128x128' src={props.item.profile_image} />
-          </LevelItem>
-          <LevelItem>
-            <Image isSize='128x128' src={props.item.profile_image} />
-          </LevelItem>
         </Level>
       </CardImage>
       <CardContent>
         <Media>
           <MediaContent>
             <Title isSize={2}>{props.item.name}</Title>
-            <Subtitle isSize={6}>{props.item.homepage_url}</Subtitle>
-            <Subtitle isSize={6}>{props.item.linkedin_url}</Subtitle>            
-            <Box>{props.item.short_description}</Box>
+            <Box>
+              <Content>
+                <p>{props.item.short_description}</p>
+                <a href={props.item.homepage_url}>{props.item.homepage_url}</a><br />
+                <a href={props.item.linkedin_url}>{props.item.linkedin_url}</a>
+              </Content>
+            </Box>
           </MediaContent>
         </Media>
       </CardContent>
