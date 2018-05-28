@@ -97,7 +97,9 @@ class App extends React.Component {
         </Hero>
         <Columns isCentered>
           <Column isSize='1/3'>
-            <CompanyList items={this.state.items} handleCompanyClick={this.handleCompanyClick} />
+            <CompanyList items={this.state.items} 
+            selectedCompany={this.state.selectedCompany}
+            handleCompanyClick={this.handleCompanyClick} />
           </Column>
           <Column isSize='2/3'>
             <CompanyInfo item={this.state.selectedCompany} />

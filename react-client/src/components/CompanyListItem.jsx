@@ -10,7 +10,6 @@ class CompanyListItem extends React.Component {
   handleClick(e) {
     e.preventDefault();
     this.props.handleCompanyClick(this.props.item);
-    this.props.updateActiveItem(this.props.item._id);
   }
 
   render() {
