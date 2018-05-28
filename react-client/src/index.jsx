@@ -2,8 +2,10 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import axios from 'axios';
 import {
-  Container, Content, Box, Hero, HeroHeader, HeroBody, Nav, NavLeft, NavRight, NavCenter, NavItem, Button,
-  Icon, Title, Subtitle,Column, Columns, Notification, Level, LevelItem, LevelLeft, LevelRight,
+  Container, Content, Box, Hero, HeroHeader, HeroBody,
+  Nav, NavLeft, NavRight, NavCenter, NavItem, Button,
+  Icon, Title, Subtitle, Column, Columns, Notification,
+  Level, LevelItem, LevelLeft, LevelRight,
 } from 'bloomer';
 
 // import fs from 'fs';
@@ -20,6 +22,8 @@ class App extends React.Component {
       testPhoto: '',
     };
     this.handleCompanyClick = this.handleCompanyClick.bind(this);
+    this.refreshDatabase = this.refreshDatabase.bind(this);
+    this.getCompanies = this.getCompanies.bind(this);
   }
 
   refreshDatabase() {
@@ -37,7 +41,7 @@ class App extends React.Component {
   getCompanies() {
     axios.get('/companies')
       .then((res) => {
-        console.log('Got companies from database');
+        console.log('Got response from database');
         // axios.get('/googleMapsInfo')
         //   .then((image) => {
         //     console.log(image.data);
@@ -46,9 +50,14 @@ class App extends React.Component {
         //     console.log(err);
         //     throw err;
         //   });
-        this.setState({ items: res.data, selectedCompany: res.data[0] }, () => {
-          console.log('Companies loaded into app state');
-        });
+        if (res.data.length !== 0) {
+          this.setState({ items: res.data, selectedCompany: res.data[0] }, () => {
+            console.log('Companies loaded into app state');
+          });
+        } else {
+          console.log('Database is empty, populating');
+          this.refreshDatabase();
+        }
       })
       .catch((err) => {
         console.log(err);
@@ -79,7 +88,9 @@ class App extends React.Component {
                   </Content>
                 </LevelLeft>
                 <LevelRight>
-                  <Button isColor='light' isOutlined>Refresh Database</Button>
+                  <Button isColor='light' isOutlined
+                  onClick={this.getCompanies}>
+                  Refresh Companies</Button>
                 </LevelRight>
               </Level>
           </HeroBody>

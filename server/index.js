@@ -23,6 +23,7 @@ app.post('/download', (req, res) => {
   axios.get('https://api.crunchbase.com/v3.1/odm-organizations', {
     params: {
       locations: req.body.location,
+      organization_types: 'company',
       user_key: process.env.CRUNCHBASE_KEY,
     },
   })
@@ -34,7 +35,7 @@ app.post('/download', (req, res) => {
         })
         .catch((err) => {
           console.log('Error writing to db: ', err.message);
-          res.header(500).send(JSON.stringify(err.message));          
+          res.header(500).send(JSON.stringify(err.message));
         });
     })
     .catch((err) => {
@@ -44,13 +45,24 @@ app.post('/download', (req, res) => {
 });
 
 app.get('/companies', (req, res) => {
-  db.companies.find().exec()
-    .then((results) => {
-      res.header(200).send(JSON.stringify(results));
+  db.checkCollections()
+    .then((collections) => {
+      if (collections) {
+        console.log('Valid database found, continuing');
+        db.companies.find().exec()
+          .then((results) => {
+            res.header(200).send(JSON.stringify(results));
+          })
+          .catch((err) => {
+            console.log('Error fetching companies from db', err.message);
+            res.header(500).send(JSON.stringify(err.message));
+          });
+      } else {
+        res.header(500).send('{[]}');
+      }
     })
     .catch((err) => {
-      console.log('Error fetching companies from db', err.message);
-      res.header(500).send(JSON.stringify(err.message));
+      console.log(err);
     });
 });
 
@@ -71,7 +83,7 @@ app.get('/googleMapsInfo', (req, res) => {
     })
     .catch((err) => {
       console.log('Error fetching image data', err);
-      res.header(400).send(err);      
+      res.header(400).send(err);
     });
 });
 

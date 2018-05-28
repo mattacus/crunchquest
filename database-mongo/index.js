@@ -40,5 +40,10 @@ let mongoSave = (rawData) => {
   return Company.insertMany(companyList);
 };
 
+let checkCollections = () => {
+  return db.db.listCollections().toArray();
+};
+
 module.exports.mongoSave = mongoSave;
+module.exports.checkCollections = checkCollections;
 module.exports.companies = Company;
