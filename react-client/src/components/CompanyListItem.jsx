@@ -10,13 +10,15 @@ class CompanyListItem extends React.Component {
   handleClick(e) {
     e.preventDefault();
     this.props.handleCompanyClick(this.props.item);
-    console.log('You clicked ', this.props.item.name);
+    this.props.updateActiveItem(this.props.item._id);
   }
 
   render() {
+    let opts = {};
+    if (this.props.isActive) { opts.isActive = 'isActive'; }
     return (
-      <li key={this.props.item._id}>
-        <MenuLink onClick={this.handleClick}>{this.props.item.name}</MenuLink>
+      <li>
+        <MenuLink onClick={this.handleClick} {...opts}>{this.props.item.name}</MenuLink>
       </li>
     );
   }

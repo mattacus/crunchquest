@@ -12,5 +12,6 @@ module.exports = {
     "no-console": 0,
     "prefer-const": 0,
     "class-methods-use-this": 0,
+    "no-underscore-dangle": 0,
   }
 };
