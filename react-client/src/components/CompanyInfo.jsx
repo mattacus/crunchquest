@@ -22,9 +22,6 @@ const CompanyInfo = props => (
           <LevelItem>
             <Image isSize='128x128' src={props.item.profile_image} />
           </LevelItem>
-          <LevelItem>
-            <Image isSize='128x128' src={props.item.profile_image} />
-          </LevelItem>
         </Level>
       </CardImage>
       <CardContent>

@@ -70,11 +70,9 @@ class App extends React.Component {
         </Hero>
         <Columns isCentered>
           <Column isSize='1/3'>
-            <Notification isColor='success' hasTextAlign='centered'> Company List Column </Notification>
             <CompanyList items={this.state.items} handleCompanyClick={this.handleCompanyClick} />
           </Column>
           <Column isSize='2/3'>
-            <Notification isColor='info' hasTextAlign='centered'> Company Info Column </Notification>
             <CompanyInfo item={this.state.selectedCompany} />
           </Column>
         </Columns>
