@@ -3,12 +3,12 @@ const bodyParser = require('body-parser');
 const db = require('../database-mongo');
 const fs = require('fs');
 const axios = require('axios');
-const Places = require('google-places-web');
+const Places = require('google-places-web').default;
+// const Places = require('google-places-web');
 require('dotenv').config();
 
 const PORT = process.env.PORT || 3000;
 Places.apiKey = process.env.GOOGLE_MAPS_KEY;
-Places.debug = true;
 
 const app = express();
 
@@ -52,17 +52,6 @@ app.get('/companies', (req, res) => {
         console.log('Valid database found, continuing');
         db.companies.find().exec()
           .then((results) => {
-            // google places testing
-
-            // Places.autocomplete({ input: '7421 Burnet Rd Suite #184, Austin, TX 78757' })
-            //   .then(places => places[0] || {})
-            //   .then(place => (place.place_id ? Places.details({ placeid: place.place_id }) : {}))
-            //   .then((details) => {
-            //     console.log(JSON.stringify(details, null, 2));
-            //   })
-            //   .catch((err) => {
-            //     throw err;
-            //   });
             res.status(200).send(JSON.stringify(results));                
           })
           .catch((err) => {
