@@ -7,7 +7,7 @@ Places.debug = false;
 
 require('dotenv').config();
 
-console.log('Using database: ', process.env.MONGODB_URI)
+console.log('Using database: ', process.env.MONGODB_URI);
 mongoose.connect(process.env.MONGODB_URI);
 const db = mongoose.connection;
 
@@ -37,7 +37,7 @@ let mongoSave = (rawData) => {
   // map to mongo schema
   companyList = companyList.forEach((company) => {
     // attempt to correlate google maps object with crunchbase url
-    Places.nearbysearch({ 
+    Places.nearbysearch({
       location: '30.3079827, -97.8934851', // center of Austin
       keyword: company.properties.name,
       radius: '30000',
@@ -45,14 +45,20 @@ let mongoSave = (rawData) => {
       .then(places => places[0] || {})
       .then(place => (place.place_id ? Places.details({ placeid: place.place_id }) : {}))
       .then((details) => {
-        // TODO: go look through each place, use url regex 
+        console.log(`Website retrieved for ${company.properties.name}: ${details.website}`);
+
+        // TODO: go look through each place in places, keep tuning regex
         let suggestedAddress;
-        if (details.website === company.properties.homepage_url) {
+        let mapsName = details.website.replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').replace(/.com.+/, '');
+        console.log('Maps website post-regex: ', mapsName);
+        let crunchName = company.properties.homepage_url.replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').replace(/.com.+/, '');
+        console.log('Crunchbase website: ', company.properties.homepage_url)
+        console.log('Crunchbase website post-regex: ', crunchName);
+        if (mapsName === crunchName) {
           suggestedAddress = details.url;
         } else {
           suggestedAddress = '';
         }
-        console.log(`Website retrieved for ${company.properties.name}: ${details.website}`);
         const dbEntry = {
           name: company.properties.name,
           profile_image: company.properties.profile_image_url,
@@ -82,9 +88,7 @@ let mongoSave = (rawData) => {
   return Promise.all(promisesArray);
 };
 
-let checkCollections = () => {
-  return db.db.listCollections().toArray();
-};
+let checkCollections = () => db.db.listCollections().toArray();
 
 module.exports.mongoSave = mongoSave;
 module.exports.checkCollections = checkCollections;
