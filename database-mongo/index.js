@@ -45,7 +45,13 @@ let mongoSave = (rawData) => {
       .then(places => places[0] || {})
       .then(place => (place.place_id ? Places.details({ placeid: place.place_id }) : {}))
       .then((details) => {
-        let suggestedAddress = details.website;
+        // TODO: go look through each place, use url regex 
+        let suggestedAddress;
+        if (details.website === company.properties.homepage_url) {
+          suggestedAddress = details.url;
+        } else {
+          suggestedAddress = '';
+        }
         console.log(`Website retrieved for ${company.properties.name}: ${details.website}`);
         const dbEntry = {
           name: company.properties.name,
