@@ -40,6 +40,7 @@
     "bulma": "^0.7.1",
     "dotenv": "^5.0.1",
     "express": "^4.16.3",
+    "google-places-web": "^0.1.6",
     "mongoose": "^5.1.2",
     "react": "^16.4.0",
     "react-dom": "^16.4.0",

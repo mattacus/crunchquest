@@ -38,6 +38,10 @@ const CompanyInfo = props => (
                   <strong>LinkedIn:&#8195;</strong>
                   <a href={props.item.linkedin_url}>{props.item.linkedin_url || '(Not provided)'}</a>
                 </p>
+                <p>
+                  <strong>Address:&#8195;</strong>
+                  <a href={props.item.address}>{props.item.address || '(Unverified)'}</a>
+                </p>
               </Content>
           </MediaContent>
         </Media>

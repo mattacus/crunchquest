@@ -45,7 +45,7 @@ class App extends React.Component {
   getCompanies() {
     axios.get('/companies')
       .then((res) => {
-        console.log('Got response from database');
+        console.log('Got response from database: ', res.status);
         // axios.get('/googleMapsInfo')
         //   .then((image) => {
         //     console.log(image.data);
@@ -108,7 +108,7 @@ class App extends React.Component {
         </Hero>
         <Columns isCentered >
           <Column isSize={{ mobile: 6, default: 4 }}>
-              <CompanyList items={this.state.page} 
+              <CompanyList items={this.state.page}
               selectedCompany={this.state.selectedCompany}
               handleCompanyClick={this.handleCompanyClick} />
               <Container isFluid style={{ marginTop: 10 }}>

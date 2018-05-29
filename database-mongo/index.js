@@ -20,6 +20,7 @@ const crunchbaseSchema = new mongoose.Schema({
   short_description: String,
   homepage_url: String,
   linkedin_url: String,
+  address: String,
 });
 
 const Company = mongoose.model('Company', crunchbaseSchema);

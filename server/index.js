@@ -3,11 +3,12 @@ const bodyParser = require('body-parser');
 const db = require('../database-mongo');
 const fs = require('fs');
 const axios = require('axios');
-
-const PORT = process.env.PORT || 3000;
+const Places = require('google-places-web');
 require('dotenv').config();
 
-const items = require('../database-mongo');
+const PORT = process.env.PORT || 3000;
+Places.apiKey = process.env.GOOGLE_MAPS_KEY;
+Places.debug = true;
 
 const app = express();
 
@@ -31,16 +32,16 @@ app.post('/download', (req, res) => {
       db.mongoSave(result.data)
         .then(() => {
           console.log('Successfully pulled data into db');
-          res.header(201).send(JSON.stringify('Success writing companies to db'));
+          res.status(201).send(JSON.stringify('Success writing companies to db'));
         })
         .catch((err) => {
           console.log('Error writing to db: ', err.message);
-          res.header(500).send(JSON.stringify(err.message));
+          res.status(500).send(JSON.stringify(err.message));
         });
     })
     .catch((err) => {
       console.log('Error: ', err);
-      res.header(404).send(JSON.stringify('Error retrieving from crunchbase'));
+      res.status(404).send(JSON.stringify('Error retrieving from crunchbase'));
     });
 });
 
@@ -51,18 +52,30 @@ app.get('/companies', (req, res) => {
         console.log('Valid database found, continuing');
         db.companies.find().exec()
           .then((results) => {
-            res.header(200).send(JSON.stringify(results));
+            // google places testing
+
+            // Places.autocomplete({ input: '7421 Burnet Rd Suite #184, Austin, TX 78757' })
+            //   .then(places => places[0] || {})
+            //   .then(place => (place.place_id ? Places.details({ placeid: place.place_id }) : {}))
+            //   .then((details) => {
+            //     console.log(JSON.stringify(details, null, 2));
+            //   })
+            //   .catch((err) => {
+            //     throw err;
+            //   });
+            res.status(200).send(JSON.stringify(results));                
           })
           .catch((err) => {
             console.log('Error fetching companies from db', err.message);
-            res.header(500).send(JSON.stringify(err.message));
+            res.status(500).send(JSON.stringify(err.message));
           });
       } else {
-        res.header(500).send('{[]}');
+        res.status(500).send('{[]}');
       }
     })
     .catch((err) => {
       console.log(err);
+      res.status(500).send(JSON.stringify(err.message));      
     });
 });
 
@@ -79,11 +92,11 @@ app.get('/googleMapsInfo', (req, res) => {
     .then((results) => {
       // console.log(results.data);
       // results.data.pipe(fs.createWriteStream('test.jpg'))
-      res.header(200).send('Server will write image data');
+      res.status(200).send('Server will write image data');
     })
     .catch((err) => {
       console.log('Error fetching image data', err);
-      res.header(400).send(err);
+      res.status(400).send(err);
     });
 });
 
