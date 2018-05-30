@@ -95,6 +95,7 @@ let mongoSave = (rawData) => {
           address: location,
         };
         let creationPromise = Company.create(dbEntry);
+        creationPromise.catch((err) => { console.log('Error creating db entry: ', err); });
         promisesArray.push(creationPromise);
       })
       .catch((err) => {
@@ -110,6 +111,7 @@ let mongoSave = (rawData) => {
           address: undefined,
         };
         let creationPromise = Company.create(dbEntry);
+        creationPromise.catch((err) => { console.log('Error creating db entry: ', err); });        
         promisesArray.push(creationPromise);
       });
   });
