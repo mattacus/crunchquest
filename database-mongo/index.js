@@ -25,6 +25,7 @@ const crunchbaseSchema = new mongoose.Schema({
   short_description: String,
   homepage_url: String,
   linkedin_url: String,
+  crunchbase_url: String,
   address: String,
 });
 
@@ -73,7 +74,10 @@ let mongoSave = (rawData) => {
             console.log('Crunchbase website: ', company.properties.homepage_url);
             console.log('Crunchbase website post-regex: ', crunchName);
             if (mapsName === crunchName) {
+              console.log(`Found match for ${company.properties.name}!`);
               suggestedAddress = place.url;
+            } else {
+              console.log('Match not found, continuing...');
             }
           }
           return suggestedAddress || acc;
@@ -87,6 +91,7 @@ let mongoSave = (rawData) => {
           short_description: company.properties.short_description,
           homepage_url: company.properties.homepage_url,
           linkedin_url: company.properties.linkedin_url,
+          crunchbase_url: `https://www.crunchbase.com/organization/${company.properties.permalink}`,
           address: location,
         };
         let creationPromise = Company.create(dbEntry);
@@ -101,6 +106,7 @@ let mongoSave = (rawData) => {
           short_description: company.properties.short_description,
           homepage_url: company.properties.homepage_url,
           linkedin_url: company.properties.linkedin_url,
+          crunchbase_url: `https://www.crunchbase.com/organization/${company.properties.permalink}`,
           address: undefined,
         };
         let creationPromise = Company.create(dbEntry);
