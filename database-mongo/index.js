@@ -36,43 +36,65 @@ let mongoSave = (rawData) => {
   let promisesArray = [];
   // map to mongo schema
   companyList = companyList.forEach((company) => {
+    let placeResults = [];
     // attempt to correlate google maps object with crunchbase url
     Places.nearbysearch({
       location: '30.3079827, -97.8934851', // center of Austin
       keyword: company.properties.name,
       radius: '30000',
     })
-      .then(places => places[0] || {})
-      .then(place => (place.place_id ? Places.details({ placeid: place.place_id }) : {}))
-      .then((details) => {
-        console.log(`Website retrieved for ${company.properties.name}: ${details.website}`);
-
-        // TODO: go look through each place in places, keep tuning regex
-        let suggestedAddress;
-        let mapsName = details.website.replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').replace(/.com.+/, '');
-        console.log('Maps website post-regex: ', mapsName);
-        let crunchName = company.properties.homepage_url.replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').replace(/.com.+/, '');
-        console.log('Crunchbase website: ', company.properties.homepage_url)
-        console.log('Crunchbase website post-regex: ', crunchName);
-        if (mapsName === crunchName) {
-          suggestedAddress = details.url;
-        } else {
-          suggestedAddress = '';
-        }
+      .then((places) => {
+        let placePromises = [];
+        places.forEach((place) => {
+          if (place.place_id) {
+            let placeSearch = Places.details({ placeid: place.place_id })
+              .then((details) => {
+                placeResults.push(details);
+              })
+              .catch((err) => {
+                console.log('Error in place details search: ', err);
+                placeResults.push('');
+              });
+            placePromises.push(placeSearch);
+          }
+        });
+        return Promise.all(placePromises);
+      })
+      .then(() => {
+        // console.log(placeResults);
+        let location = placeResults.reduce((acc, place) => {
+          // console.log(place);
+          let suggestedAddress = '';
+          if (place.website) {
+            let mapsName = place.website.replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').replace(/.com.*/, '');
+            let crunchName = company.properties.homepage_url.replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').replace(/.com.*/, '');
+            console.log(`Website retrieved for ${company.properties.name}: ${place.website}`);
+            console.log('Maps website post-regex: ', mapsName);
+            console.log('Crunchbase website: ', company.properties.homepage_url);
+            console.log('Crunchbase website post-regex: ', crunchName);
+            if (mapsName === crunchName) {
+              suggestedAddress = place.url;
+            }
+          }
+          return suggestedAddress || acc;
+        }, '');
+        return location;
+      })
+      .then((location) => {
         const dbEntry = {
           name: company.properties.name,
           profile_image: company.properties.profile_image_url,
           short_description: company.properties.short_description,
           homepage_url: company.properties.homepage_url,
           linkedin_url: company.properties.linkedin_url,
-          address: suggestedAddress,
+          address: location,
         };
         let creationPromise = Company.create(dbEntry);
         promisesArray.push(creationPromise);
       })
       .catch((err) => {
+        // workaround to generate db entry even if location lookup fails
         console.log(`Error in Query ${company.properties.name}: ${err}`);
-        // this is an ugly hack, please fix soon
         const dbEntry = {
           name: company.properties.name,
           profile_image: company.properties.profile_image_url,
