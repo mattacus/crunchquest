@@ -85,7 +85,7 @@ class App extends React.Component {
   render() {
     return (
       <div>
-        <Hero isSize='small' isBold='true'>
+        <Hero isColor='dark' isSize='small' >
           <HeroHeader>
           </HeroHeader>
           <HeroBody>

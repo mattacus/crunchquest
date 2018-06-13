@@ -105,9 +105,9 @@ class Pagination extends React.Component {
 
     return (
       <nav className="pagination" role="navigation">
-            <a className={pager.currentPage === 1 ? 'pagination-previous is-current' : 'pagination-previous '} 
+            <a className={pager.currentPage === 1 ? 'pagination-previous is-current' : 'pagination-previous is-light'} 
           onClick={() => this.setPage(pager.currentPage - 1)} disabled={pager.currentPage === 1 ? true : false}>{'< Previous'}</a>
-            <a className={pager.currentPage === pager.totalPages ? 'pagination-next is-current' : 'pagination-next'}
+            <a className={pager.currentPage === pager.totalPages ? 'pagination-next is-current' : 'pagination-next is-light'}
           onClick={() => this.setPage(pager.currentPage + 1)} disabled={pager.currentPage === pager.totalPages ? true : false}>{'Next >'}</a>
       </nav>
     );
