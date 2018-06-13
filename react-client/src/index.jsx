@@ -12,6 +12,7 @@ import {
 import CompanyList from './components/CompanyList.jsx';
 import CompanyInfo from './components/CompanyInfo.jsx';
 import Pagination from './components/Pagination.jsx';
+import './styles/main.scss';
 
 // hardcoded location, for now
 const searchLocation = 'Austin';
@@ -84,15 +85,15 @@ class App extends React.Component {
   render() {
     return (
       <div>
-        <Hero isColor='dark' isSize='small' isBold='true'>
+        <Hero isSize='small' isBold='true'>
           <HeroHeader>
           </HeroHeader>
           <HeroBody>
               <Level>
                 <LevelLeft>
                   <Content>
-                    <Title>CrunchQuest</Title>
-                    <Subtitle isSize={6}><em>alpha</em></Subtitle>
+                    <Title hasTextColor='light'>CrunchQuest</Title>
+                    <Subtitle isSize={6} hasTextColor='light'><em>alpha</em></Subtitle>
                   </Content>
                 </LevelLeft>
                 <LevelRight>
@@ -100,7 +101,7 @@ class App extends React.Component {
                     <Button isColor='light' isOutlined
                     onClick={this.getCompanies}>
                     Refresh Companies</Button>
-                    <Subtitle isSize={6}><em>{`Currently viewing: ${searchLocation}`}</em></Subtitle>
+                    <Subtitle isSize={6} hasTextColor='light'><em>{`Currently viewing: ${searchLocation}`}</em></Subtitle>
                   </Content>
                 </LevelRight>
               </Level>
