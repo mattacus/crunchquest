@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const db = require('../database-mongo');
 const fs = require('fs');
 const axios = require('axios');
+const morgan = require('morgan');
 const Places = require('google-places-web').default;
 // const Places = require('google-places-web');
 require('dotenv').config();
@@ -18,6 +19,7 @@ app.use(express.static(`${__dirname}/../react-client/dist`));
 app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
 app.use(bodyParser.json());
+app.use(morgan('dev'));
 
 app.post('/download', (req, res) => {
   console.log('Querying location: ', req.body.location);
