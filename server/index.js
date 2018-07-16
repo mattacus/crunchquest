@@ -70,6 +70,14 @@ app.get('/companies', (req, res) => {
     });
 });
 
+app.get('/googleMapsAPIKey', (req, res) => {
+  if (process.env.GOOGLE_MAPS_KEY) {
+    res.status(200).send(process.env.GOOGLE_MAPS_KEY);
+  } else {
+    res.status(500).send('Err: no valid maps API key found');
+  }
+});
+
 app.get('/googleMapsInfo', (req, res) => {
   // google maps API test
   axios.get('https://maps.googleapis.com/maps/api/place/photo', {

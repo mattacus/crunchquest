@@ -17,7 +17,7 @@ Once the project moves into development, the press release can be used as a touc
  -->
  
 ## Heading ##
-  > CrunchQuest: Explore the companies in your neighborhood.
+  > CrunchQuest: Interactively explore companies in your area
 
 ## Sub-Heading ##
   > For job seekers and industry explorers who just want an unbiased lay of the land

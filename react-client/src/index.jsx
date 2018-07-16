@@ -12,6 +12,7 @@ import {
 import CompanyList from './components/CompanyList.jsx';
 import CompanyInfo from './components/CompanyInfo.jsx';
 import Pagination from './components/Pagination.jsx';
+import MarkerClusterMap from './components/MarkerClusterMap.jsx';
 import './styles/main.scss';
 
 // hardcoded location, for now
@@ -25,6 +26,7 @@ class App extends React.Component {
       page: [],
       selectedCompany: {},
       testPhoto: '',
+      mapMarkers: [],
     };
     this.handleCompanyClick = this.handleCompanyClick.bind(this);
     this.refreshDatabase = this.refreshDatabase.bind(this);
@@ -72,6 +74,34 @@ class App extends React.Component {
   componentDidMount() {
     console.log('App mounted');
     this.getCompanies();
+
+    // get api key
+    // axios.get('googleMapsAPIKey')
+    //   .then((res) => {
+    //     this.setState({
+    //       apiKey: res.data,
+    //     });
+    //   })
+    //   .catch((err) => {
+    //     console.log(err);
+    //   });
+
+    // get mock map data
+    // const url = [
+    //   // Length issue
+    //   'https://gist.githubusercontent.com',
+    //   '/farrrr/dfda7dd7fccfec5474d3',
+    //   '/raw/758852bbc1979f6c4522ab4e92d1c92cba8fb0dc/data.json',
+    // ].join('');
+    // axios.get(url)
+    //   .then((res) => {
+    //     this.setState({
+    //       mapMarkers: res.data.photos,
+    //     });
+    //   })
+    //   .catch((err) => {
+    //     console.log(err);
+    //   });
   }
 
   handleCompanyClick(company) {
@@ -107,19 +137,28 @@ class App extends React.Component {
               </Level>
           </HeroBody>
         </Hero>
-        <Columns isCentered >
-          <Column isSize={{ mobile: 6, default: 4 }}>
-              <CompanyList items={this.state.page}
-              selectedCompany={this.state.selectedCompany}
-              handleCompanyClick={this.handleCompanyClick} />
-              <Container isFluid style={{ marginTop: 10 }}>
-                <Pagination items={this.state.items} onChangePage={this.onChangePage} />
-              </Container>
-          </Column>
-          <Column isSize={{ mobile: 6, default: 8 }}>
-            <CompanyInfo item={this.state.selectedCompany} />
-          </Column>
-        </Columns>
+        {/* <div className="container"> */}
+          <div class="tile is-ancestor">
+            <div class="tile is-4 is-vertical is-parent">
+              <div class="tile is-child box">
+                <CompanyList items={this.state.page}
+                  selectedCompany={this.state.selectedCompany}
+                  handleCompanyClick={this.handleCompanyClick} />
+                <Container isFluid style={{ marginTop: 10 }}>
+                  <Pagination items={this.state.items} onChangePage={this.onChangePage} />
+                </Container>
+              </div>
+              <div class="tile is-child box">
+                <CompanyInfo item={this.state.selectedCompany} />
+              </div>
+            </div>
+            <div class="tile is-parent">
+              <div class="tile is-child box">
+                <MarkerClusterMap apiKey={this.state.apiKey} markers={this.state.mapMarkers} />
+              </div>
+            </div>
+          </div>
+        {/* </div> */}
       </div>
     );
   }

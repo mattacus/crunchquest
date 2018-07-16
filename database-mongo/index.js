@@ -31,6 +31,10 @@ const crunchbaseSchema = new mongoose.Schema({
 
 const Company = mongoose.model('Company', crunchbaseSchema);
 
+let getMappedCompanies = () => {
+  // do stuff here
+};
+
 let mongoSave = (rawData) => {
   // format of crunchbase data
   let companyList = rawData.data.items;
@@ -121,5 +125,6 @@ let mongoSave = (rawData) => {
 let checkCollections = () => db.db.listCollections().toArray();
 
 module.exports.mongoSave = mongoSave;
+module.exports.getMappedCompanies = getMappedCompanies;
 module.exports.checkCollections = checkCollections;
 module.exports.companies = Company;

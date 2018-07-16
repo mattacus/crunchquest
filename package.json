@@ -42,10 +42,13 @@
     "dotenv": "^5.0.1",
     "express": "^4.16.3",
     "google-places-web": "^0.1.6",
+    "isomorphic-fetch": "^2.2.1",
     "mongoose": "^5.1.2",
     "morgan": "^1.9.0",
     "react": "^16.4.0",
     "react-dom": "^16.4.0",
+    "react-google-maps": "^9.4.5",
+    "recompose": "^0.27.1",
     "request": "^2.87.0",
     "request-promise": "^4.2.2"
   }
