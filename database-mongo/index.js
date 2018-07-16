@@ -26,6 +26,7 @@ const crunchbaseSchema = new mongoose.Schema({
   homepage_url: String,
   linkedin_url: String,
   crunchbase_url: String,
+  indeed_url: String,
   address: String,
 });
 
@@ -96,6 +97,7 @@ let mongoSave = (rawData) => {
           homepage_url: company.properties.homepage_url,
           linkedin_url: company.properties.linkedin_url,
           crunchbase_url: `https://www.crunchbase.com/organization/${company.properties.permalink}`,
+          indeed_url: `https://www.indeed.com/jobs?q=${company.properties.name}&l=Austin%2C+TX`,
           address: location,
         };
         let creationPromise = Company.create(dbEntry);
@@ -112,6 +114,7 @@ let mongoSave = (rawData) => {
           homepage_url: company.properties.homepage_url,
           linkedin_url: company.properties.linkedin_url,
           crunchbase_url: `https://www.crunchbase.com/organization/${company.properties.permalink}`,
+          indeed_url: `https://www.indeed.com/jobs?q=${company.properties.name}&l=Austin%2C+TX`,
           address: undefined,
         };
         let creationPromise = Company.create(dbEntry);

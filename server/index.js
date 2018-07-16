@@ -47,6 +47,10 @@ app.post('/download', (req, res) => {
     });
 });
 
+app.post('downloadAll', (req, res) => {
+  // TODO: get all paginated results
+});
+
 app.get('/companies', (req, res) => {
   db.checkCollections()
     .then((collections) => {

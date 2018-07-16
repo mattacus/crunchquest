@@ -87,6 +87,7 @@ class App extends React.Component {
     //   });
 
     // get mock map data
+
     // const url = [
     //   // Length issue
     //   'https://gist.githubusercontent.com',

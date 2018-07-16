@@ -46,6 +46,10 @@ const CompanyInfo = props => (
                   <strong>Address:&#8195;</strong>
                   <a href={props.item.address}>{props.item.address || '(Unverified)'}</a>
                 </p>
+                <p>
+                  <strong>Search Jobs On Indeed:&#8195;</strong>
+                  <a href={props.item.indeed_url}>{props.item.indeed_url || '(Unverified)'}</a>
+                </p>
               </Content>
           </MediaContent>
         </Media>
