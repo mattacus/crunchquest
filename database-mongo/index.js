@@ -28,6 +28,9 @@ const crunchbaseSchema = new mongoose.Schema({
   crunchbase_url: String,
   indeed_url: String,
   address: String,
+  location_lat: String,
+  location_long: String,
+  place_id: String,
 });
 
 const Company = mongoose.model('Company', crunchbaseSchema);
@@ -43,6 +46,10 @@ let mongoSave = (rawData) => {
   // map to mongo schema
   companyList = companyList.forEach((company) => {
     let placeResults = [];
+    let locationLatResult = '';
+    let locationLngResult = '';
+    let placeIDResult = '';
+    
     // attempt to correlate google maps object with crunchbase url
     Places.nearbysearch({
       location: '30.3079827, -97.8934851', // center of Austin
@@ -81,6 +88,13 @@ let mongoSave = (rawData) => {
             if (mapsName === crunchName) {
               console.log(`Found match for ${company.properties.name}!`);
               suggestedAddress = place.url;
+              locationLatResult = String(place.geometry.location.lat);
+              locationLngResult = String(place.geometry.location.lng);
+              placeIDResult = String(place.id);
+              console.log('suggestedAddress: ', suggestedAddress);
+              console.log('locationLatResult: ', locationLatResult);
+              console.log('locationLngResult: ', locationLngResult);
+              console.log('placeIDResult: ', placeIDResult);
             } else {
               console.log('Match not found, continuing...');
             }
@@ -99,6 +113,9 @@ let mongoSave = (rawData) => {
           crunchbase_url: `https://www.crunchbase.com/organization/${company.properties.permalink}`,
           indeed_url: `https://www.indeed.com/jobs?q=${company.properties.name}&l=Austin%2C+TX`,
           address: location,
+          location_lat: locationLatResult,
+          location_long: locationLngResult,
+          place_id: placeIDResult,
         };
         let creationPromise = Company.create(dbEntry);
         creationPromise.catch((err) => { console.log('Error creating db entry: ', err); });
@@ -116,9 +133,12 @@ let mongoSave = (rawData) => {
           crunchbase_url: `https://www.crunchbase.com/organization/${company.properties.permalink}`,
           indeed_url: `https://www.indeed.com/jobs?q=${company.properties.name}&l=Austin%2C+TX`,
           address: undefined,
+          location_lat: undefined,
+          location_long: undefined,
+          place_id: undefined,
         };
         let creationPromise = Company.create(dbEntry);
-        creationPromise.catch((err) => { console.log('Error creating db entry: ', err); });        
+        creationPromise.catch((err) => { console.log('Error creating db entry: ', err); });
         promisesArray.push(creationPromise);
       });
   });

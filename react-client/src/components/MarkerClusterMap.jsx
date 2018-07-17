@@ -40,7 +40,7 @@ const MarkerClusterMap = compose(
     >
       {props.markers.length ? props.markers.map(marker => (
         <Marker
-          key={marker.photo_id}
+          key={marker.id}
           position={{ lat: marker.latitude, lng: marker.longitude }}
         />
       )) : <div></div>}

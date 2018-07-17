@@ -37,17 +37,21 @@ class App extends React.Component {
     axios.get('/companies')
       .then((res) => {
         console.log('Got response from database: ', res.status);
-        // axios.get('/googleMapsInfo')
-        //   .then((image) => {
-        //     console.log(image.data);
-        //   })
-        //   .catch((err) => {
-        //     console.log(err);
-        //     throw err;
-        //   });
         if (res.data.length !== 0) {
           this.setState({ items: res.data, selectedCompany: res.data[0] }, () => {
             console.log('Companies loaded into app state');
+            console.log('Creating markers...');
+            let markers = [];
+            this.state.items.forEach((item) => {
+              if (item.address) {
+                markers.push({
+                  id: item.place_id,
+                  latitude: Number(item.location_lat),
+                  longitude: Number(item.location_long),
+                });
+              }
+            });
+            this.setState({ mapMarkers: markers });
           });
         } else {
           console.log('Err: Database is empty');
@@ -142,7 +146,7 @@ class App extends React.Component {
             </div>
             <div className="tile is-parent">
               <div className="tile is-child box">
-                <MarkerClusterMap apiKey={this.state.apiKey} markers={this.state.mapMarkers} />
+                <MarkerClusterMap markers={this.state.mapMarkers} />
               </div>
             </div>
           </div>
