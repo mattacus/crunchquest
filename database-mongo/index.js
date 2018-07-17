@@ -20,7 +20,7 @@ db.once('open', () => {
 });
 
 const crunchbaseSchema = new mongoose.Schema({
-  name: { type: String, index: { unique: true } },
+  name: String,
   profile_image: String,
   short_description: String,
   homepage_url: String,

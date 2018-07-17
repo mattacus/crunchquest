@@ -47,8 +47,62 @@ app.post('/download', (req, res) => {
     });
 });
 
-app.post('downloadAll', (req, res) => {
+app.post('/downloadAll', (req, res) => {
   // TODO: get all paginated results
+  let first = true;
+  console.log('Querying location: ', req.body.location);
+  let NUM_PAGES = 1;
+  axios.get('https://api.crunchbase.com/v3.1/odm-organizations', {
+    params: {
+      locations: req.body.location,
+      organization_types: 'company',
+      user_key: process.env.CRUNCHBASE_KEY,
+    },
+  })
+    .then((result) => {
+      if (result.data.data.paging.number_of_pages > 1) {
+        NUM_PAGES = result.data.data.paging.number_of_pages;
+        console.log('Num of result pages: ', NUM_PAGES);
+        for (let pageNum = 1; pageNum <= NUM_PAGES; pageNum++) {
+          axios.get('https://api.crunchbase.com/v3.1/odm-organizations', {
+            params: {
+              locations: req.body.location,
+              organization_types: 'company',
+              page: pageNum,
+              user_key: process.env.CRUNCHBASE_KEY,
+            },
+          })
+            .then((page) => {
+              db.mongoSave(page.data)
+                .then(() => {
+                  console.log(`Successfully pulled data into db: page ${pageNum} of ${NUM_PAGES}`);
+                })
+                .catch((err) => {
+                  console.log('Error writing to db: ', err.message);
+                });
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        }
+        res.status(201).send(JSON.stringify('Writing companies to db...'));
+      } else {
+        console.log('downloadAll fell through to single case');
+        db.mongoSave(result.data)
+          .then(() => {
+            console.log('Successfully pulled data into db');
+            res.status(201).send(JSON.stringify('Success writing companies to db'));
+          })
+          .catch((err) => {
+            console.log('Error writing to db: ', err.message);
+            res.status(500).send(JSON.stringify(err.message));
+          });
+      }
+    })
+    .catch((err) => {
+      console.log('Error: ', err);
+      res.status(404).send(JSON.stringify('Error retrieving from crunchbase'));
+    });
 });
 
 app.get('/companies', (req, res) => {
@@ -58,7 +112,7 @@ app.get('/companies', (req, res) => {
         console.log('Valid database found, continuing');
         db.companies.find().exec()
           .then((results) => {
-            res.status(200).send(JSON.stringify(results));                
+            res.status(200).send(JSON.stringify(results));
           })
           .catch((err) => {
             console.log('Error fetching companies from db', err.message);
@@ -70,7 +124,7 @@ app.get('/companies', (req, res) => {
     })
     .catch((err) => {
       console.log(err);
-      res.status(500).send(JSON.stringify(err.message));      
+      res.status(500).send(JSON.stringify(err.message));
     });
 });
 
