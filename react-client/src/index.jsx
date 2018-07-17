@@ -104,7 +104,6 @@ class App extends React.Component {
                 <LevelLeft>
                   <Content>
                     <Title hasTextColor='light'>CrunchQuest</Title>
-                    <Subtitle isSize={6} hasTextColor='light'><em>alpha</em></Subtitle>
                   </Content>
                 </LevelLeft>
                 {/* <LevelItem>
@@ -122,9 +121,6 @@ class App extends React.Component {
                 </LevelItem> */}
                 <LevelRight>
                   <Content>
-                    <Button isColor='light' isOutlined
-                    onClick={this.getCompanies}>
-                    Refresh Companies</Button>
                     <Subtitle isSize={6} hasTextColor='light'><em>{`Currently viewing: ${searchLocation}`}</em></Subtitle>
                   </Content>
                 </LevelRight>
