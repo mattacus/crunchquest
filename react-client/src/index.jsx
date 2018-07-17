@@ -45,6 +45,7 @@ class App extends React.Component {
             this.state.items.forEach((item) => {
               if (item.address) {
                 markers.push({
+                  name: item.name,
                   id: item.place_id,
                   latitude: Number(item.location_lat),
                   longitude: Number(item.location_long),
