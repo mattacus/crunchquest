@@ -29,20 +29,8 @@ class App extends React.Component {
       mapMarkers: [],
     };
     this.handleCompanyClick = this.handleCompanyClick.bind(this);
-    this.refreshDatabase = this.refreshDatabase.bind(this);
     this.getCompanies = this.getCompanies.bind(this);
     this.onChangePage = this.onChangePage.bind(this);
-  }
-
-  refreshDatabase() {
-    // Download new company data
-    axios.post('/download', { location: searchLocation })
-      .then((res) => {
-        console.log(res.data);
-      })
-      .catch((err) => {
-        console.log('Error requesting new company data: ', err);
-      });
   }
 
   getCompanies() {
@@ -62,8 +50,7 @@ class App extends React.Component {
             console.log('Companies loaded into app state');
           });
         } else {
-          console.log('Database is empty, populating');
-          this.refreshDatabase();
+          console.log('Err: Database is empty');
         }
       })
       .catch((err) => {
@@ -139,9 +126,9 @@ class App extends React.Component {
           </HeroBody>
         </Hero>
         {/* <div className="container"> */}
-          <div class="tile is-ancestor">
-            <div class="tile is-4 is-vertical is-parent">
-              <div class="tile is-child box">
+          <div className="tile is-ancestor">
+            <div className="tile is-4 is-vertical is-parent">
+              <div className="tile is-child box">
                 <CompanyList items={this.state.page}
                   selectedCompany={this.state.selectedCompany}
                   handleCompanyClick={this.handleCompanyClick} />
@@ -149,12 +136,12 @@ class App extends React.Component {
                   <Pagination items={this.state.items} onChangePage={this.onChangePage} />
                 </Container>
               </div>
-              <div class="tile is-child box">
+              <div className="tile is-child box">
                 <CompanyInfo item={this.state.selectedCompany} />
               </div>
             </div>
-            <div class="tile is-parent">
-              <div class="tile is-child box">
+            <div className="tile is-parent">
+              <div className="tile is-child box">
                 <MarkerClusterMap apiKey={this.state.apiKey} markers={this.state.mapMarkers} />
               </div>
             </div>
