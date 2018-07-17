@@ -27,10 +27,12 @@ class App extends React.Component {
       selectedCompany: {},
       testPhoto: '',
       mapMarkers: [],
+      mapLabels: true,
     };
     this.handleCompanyClick = this.handleCompanyClick.bind(this);
     this.getCompanies = this.getCompanies.bind(this);
     this.onChangePage = this.onChangePage.bind(this);
+    this.handleToggleMapLabels = this.handleToggleMapLabels.bind(this);
   }
 
   getCompanies() {
@@ -77,24 +79,6 @@ class App extends React.Component {
     //   .catch((err) => {
     //     console.log(err);
     //   });
-
-    // get mock map data
-
-    // const url = [
-    //   // Length issue
-    //   'https://gist.githubusercontent.com',
-    //   '/farrrr/dfda7dd7fccfec5474d3',
-    //   '/raw/758852bbc1979f6c4522ab4e92d1c92cba8fb0dc/data.json',
-    // ].join('');
-    // axios.get(url)
-    //   .then((res) => {
-    //     this.setState({
-    //       mapMarkers: res.data.photos,
-    //     });
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //   });
   }
 
   handleCompanyClick(company) {
@@ -103,6 +87,10 @@ class App extends React.Component {
 
   onChangePage(pageOfItems) {
     this.setState({ page: pageOfItems });
+  }
+
+  handleToggleMapLabels() {
+    this.setState({ mapLabels: !this.state.mapLabels });
   }
 
   render() {
@@ -119,6 +107,19 @@ class App extends React.Component {
                     <Subtitle isSize={6} hasTextColor='light'><em>alpha</em></Subtitle>
                   </Content>
                 </LevelLeft>
+                {/* <LevelItem>
+                  <div className="field">
+                    <input
+                    id="toggleMapLabels"
+                    type="checkbox"
+                    name="toggleMapLabels"
+                    className="switch is-link"
+                    defaultChecked=''
+                    onChange={this.handleToggleMapLabels}
+                    />
+                    <label htmlFor="toggleMapLabels">Toggle Map Labels</label>
+                  </div>
+                </LevelItem> */}
                 <LevelRight>
                   <Content>
                     <Button isColor='light' isOutlined
@@ -147,7 +148,10 @@ class App extends React.Component {
             </div>
             <div className="tile is-parent">
               <div className="tile is-child box">
-                <MarkerClusterMap markers={this.state.mapMarkers} />
+                <MarkerClusterMap
+                  markers={this.state.mapMarkers}
+                  mapLabels={this.state.mapLabels}
+                />
               </div>
             </div>
           </div>

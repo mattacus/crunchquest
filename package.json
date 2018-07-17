@@ -39,6 +39,7 @@
     "bluebird": "^3.5.1",
     "body-parser": "^1.18.3",
     "bulma": "^0.7.1",
+    "bulma-extensions": "^2.2.1",
     "bulmaswatch": "^0.6.2",
     "dotenv": "^5.0.1",
     "express": "^4.16.3",

@@ -3,9 +3,25 @@
 // Import the initial variables
 
 @import "../../../node_modules/bulmaswatch/darkly/_variables.scss";
+// fix some ovverrides
+$radius-small: 0.1875rem;
+$radius-large: 0.5rem;
+$size-6: 0.9375rem;
+$size-7: .85rem;
+$body-size: 1rem;
+
 @import "../../../node_modules/bulma/bulma";
+
+@import "../../../node_modules/bulma-extensions/bulma-switch/dist/css/bulma-switch";
 @import "../../../node_modules/bulmaswatch/darkly/_overrides.scss";
 
-.mapbox {
-   height: 100%;
+// override map InfoWindow styles
+.gm-style .gm-style-iw + div {
+    display: none; /* <-- this will generally work on the fly. */
+    visibility: hidden; /* this 2 lines below are just for hard hiding. :) */
+    opacity: 0;
+    text-align: center;
+}
+.gm-style-iw {
+  text-align: center;
 }
