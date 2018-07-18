@@ -33,6 +33,7 @@ class MarkerClusterMap extends React.Component {
       <GoogleMap
         defaultZoom={10}
         defaultCenter={{ lat: 30.3079827, lng: -97.8934851 }}
+        center={this.props.center}
       >
         <MarkerClusterer
           onClick={this.props.onMarkerClustererClick}
@@ -71,13 +72,6 @@ export default compose(
       console.log(clickedMarkers);
     },
   }),
-  // withStateHandlers(() => ({
-  //   isOpen: false,
-  // }), {
-  //   onToggleOpen: ({ isOpen }) => () => ({
-  //     isOpen: !isOpen,
-  //   }),
-  // }),
   withScriptjs,
   withGoogleMap,
 )(MarkerClusterMap);

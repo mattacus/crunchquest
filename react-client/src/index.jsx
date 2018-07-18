@@ -121,7 +121,6 @@ class App extends React.Component {
               </Level>
           </HeroBody>
         </Hero>
-        {/* <div className="container"> */}
           <div className="tile is-ancestor">
             <div className="tile is-4 is-vertical is-parent">
               <div className="tile is-child box">
@@ -142,11 +141,14 @@ class App extends React.Component {
                   markers={this.state.mapMarkers}
                   mapLabels={this.state.mapLabels}
                   handleMarkerNameClick={this.handleMarkerNameClick}
+                  center={this.state.selectedCompany.address ? {
+                      lat: Number(this.state.selectedCompany.location_lat),
+                      lng: Number(this.state.selectedCompany.location_long),
+                  } : { lat: 30.3079827, lng: -97.8934851 }}
                 />
               </div>
             </div>
           </div>
-        {/* </div> */}
       </div>
     );
   }
