@@ -1,15 +1,13 @@
+const logger = require('./logger');
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongo = require('../database-mongo/dbHelpers.js');
 const fs = require('fs');
 const axios = require('axios');
 const morgan = require('morgan');
-const logger = require('./logger.js');
-const Places = require('google-places-web').default;
 require('dotenv').config();
 
 const PORT = process.env.PORT || 3000;
-Places.apiKey = process.env.GOOGLE_MAPS_KEY;
 
 const app = express();
 
@@ -44,6 +42,46 @@ app.post('/download', (req, res) => {
     .catch((err) => {
       console.log('Error: ', err);
       res.status(404).send(JSON.stringify('Error retrieving from crunchbase'));
+    });
+});
+
+app.post('/createSearchCache', (req, res) => {
+  if (!req.body.location) {
+    res.status(400).send('Err: no location supplied');
+  }
+  mongo.getLocationInfo(req.body.location)
+    .then((result) => {
+      if (result) {
+        helpers.createLocationSearchCache(result, [{ name: 'GOAT' }]);
+        res.status(200).send('Creating location search cache...');
+      } else {
+        logger.error('Location not found');
+        res.status(404).send('Location not found');
+      }
+    })
+    .catch((err) => {
+      logger.error(err);
+      res.status(500).send('Error requesting location');
+    });
+});
+
+app.post('/searchCacheTest', (req, res) => {
+  if (!req.body.location) {
+    res.status(400).send('Err: no location supplied');
+  }
+  mongo.getSearchCacheByLocation(req.body.location)
+    .then((result) => {
+      if (result) {
+        logger.info(JSON.parse(result.searchCache));
+        res.status(200).send(JSON.parse(result.searchCache));
+      } else {
+        logger.error('search cache not found');
+        res.status(404).send('search cache not found');
+      }
+    })
+    .catch((err) => {
+      logger.error(err);
+      res.status(500).send('Error requesting location');
     });
 });
 
@@ -128,7 +166,7 @@ app.get('/companies', (req, res) => {
     });
 });
 
-app.get('/checkCollection', (req, res) => {
+app.get('/checkCollections', (req, res) => {
   mongo.checkCollections()
     .then((collections) => {
       logger.info(collections);
