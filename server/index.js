@@ -1,11 +1,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const db = require('../database-mongo');
+const mongo = require('../database-mongo/dbHelpers.js');
 const fs = require('fs');
 const axios = require('axios');
 const morgan = require('morgan');
 const Places = require('google-places-web').default;
-// const Places = require('google-places-web');
 require('dotenv').config();
 
 const PORT = process.env.PORT || 3000;
@@ -31,7 +30,7 @@ app.post('/download', (req, res) => {
     },
   })
     .then((result) => {
-      db.mongoSave(result.data)
+      mongo.mongoSave(result.data)
         .then(() => {
           console.log('Successfully pulled data into db');
           res.status(201).send(JSON.stringify('Success writing companies to db'));
@@ -73,7 +72,7 @@ app.post('/downloadAll', (req, res) => {
             },
           })
             .then((page) => {
-              db.mongoSave(page.data)
+              mongo.mongoSave(page.data)
                 .then(() => {
                   console.log(`Successfully pulled data into db: page ${pageNum} of ${NUM_PAGES}`);
                 })
@@ -88,7 +87,7 @@ app.post('/downloadAll', (req, res) => {
         res.status(201).send(JSON.stringify('Writing companies to db...'));
       } else {
         console.log('downloadAll fell through to single case');
-        db.mongoSave(result.data)
+        mongo.mongoSave(result.data)
           .then(() => {
             console.log('Successfully pulled data into db');
             res.status(201).send(JSON.stringify('Success writing companies to db'));
@@ -106,11 +105,11 @@ app.post('/downloadAll', (req, res) => {
 });
 
 app.get('/companies', (req, res) => {
-  db.checkCollections()
+  mongo.checkCollections()
     .then((collections) => {
       if (collections) {
         console.log('Valid database found, continuing');
-        db.companies.find().exec()
+        mongo.companies.find().exec()
           .then((results) => {
             res.status(200).send(JSON.stringify(results));
           })
@@ -125,6 +124,17 @@ app.get('/companies', (req, res) => {
     .catch((err) => {
       console.log(err);
       res.status(500).send(JSON.stringify(err.message));
+    });
+});
+
+app.get('/checkCollection', (req, res) => {
+  mongo.checkCollections()
+    .then((collections) => {
+      console.log('Collections: ', collections);
+      res.status(200).send(collections);
+    })
+    .catch((err) => {
+      res.status(400).send(err);
     });
 });
 

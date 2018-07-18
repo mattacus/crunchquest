@@ -1,39 +1,9 @@
-const mongoose = require('mongoose');
-const axios = require('axios');
+const db = require('./models');
+require('dotenv').config();
 const Places = require('google-places-web').default;
 
 Places.apiKey = process.env.GOOGLE_MAPS_KEY;
 Places.debug = false;
-
-require('dotenv').config();
-
-console.log('Using database: ', process.env.MONGODB_URI);
-mongoose.connect(process.env.MONGODB_URI);
-const db = mongoose.connection;
-
-db.on('error', () => {
-  console.log('mongoose connection error');
-});
-
-db.once('open', () => {
-  console.log('mongoose connected successfully');
-});
-
-const crunchbaseSchema = new mongoose.Schema({
-  name: String,
-  profile_image: String,
-  short_description: String,
-  homepage_url: String,
-  linkedin_url: String,
-  crunchbase_url: String,
-  indeed_url: String,
-  address: String,
-  location_lat: String,
-  location_long: String,
-  place_id: String,
-});
-
-const Company = mongoose.model('Company', crunchbaseSchema);
 
 let getMappedCompanies = () => {
   // do stuff here
@@ -117,7 +87,7 @@ let mongoSave = (rawData) => {
           location_long: locationLngResult,
           place_id: placeIDResult,
         };
-        let creationPromise = Company.create(dbEntry);
+        let creationPromise = db.models.Company.create(dbEntry);
         creationPromise.catch((err) => { console.log('Error creating db entry: ', err); });
         promisesArray.push(creationPromise);
       })
@@ -137,7 +107,7 @@ let mongoSave = (rawData) => {
           location_long: undefined,
           place_id: undefined,
         };
-        let creationPromise = Company.create(dbEntry);
+        let creationPromise = db.models.Company.create(dbEntry);
         creationPromise.catch((err) => { console.log('Error creating db entry: ', err); });
         promisesArray.push(creationPromise);
       });
@@ -145,9 +115,11 @@ let mongoSave = (rawData) => {
   return Promise.all(promisesArray);
 };
 
-let checkCollections = () => db.db.listCollections().toArray();
+let checkCollections = () => {
+  console.log('Checking collections');
+  return db.conn.db.listCollections().toArray();
+};
 
 module.exports.mongoSave = mongoSave;
 module.exports.getMappedCompanies = getMappedCompanies;
 module.exports.checkCollections = checkCollections;
-module.exports.companies = Company;
