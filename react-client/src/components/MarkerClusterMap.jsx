@@ -21,14 +21,11 @@ class MarkerClusterMap extends React.Component {
       isOpen: true,
     };
 
-    this.onToggleOpen = this.onToggleOpen.bind(this);
+    this.onTitleClick = this.onTitleClick.bind(this);
   }
 
-  onToggleOpen() {
-    console.log('hi')
-    this.setState({
-      isOpen: !this.state.isOpen,
-    });
+  onTitleClick(company) {
+    this.props.handleMarkerNameClick(company);
   }
 
   render() {
@@ -49,7 +46,7 @@ class MarkerClusterMap extends React.Component {
               position={{ lat: marker.latitude, lng: marker.longitude }}
             >
               {this.state.isOpen && <InfoWindow>
-                <a>{marker.name}</a>
+                <a onClick={() => { this.onTitleClick(marker.name); }}>{marker.name}</a>
               </InfoWindow>}
             </Marker>
           )) : <div></div>}

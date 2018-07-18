@@ -30,6 +30,7 @@ class App extends React.Component {
       mapLabels: true,
     };
     this.handleCompanyClick = this.handleCompanyClick.bind(this);
+    this.handleMarkerNameClick = this.handleMarkerNameClick.bind(this);
     this.getCompanies = this.getCompanies.bind(this);
     this.onChangePage = this.onChangePage.bind(this);
     this.handleToggleMapLabels = this.handleToggleMapLabels.bind(this);
@@ -85,6 +86,12 @@ class App extends React.Component {
     this.setState({ selectedCompany: company });
   }
 
+  handleMarkerNameClick(company) {
+    let found = this.state.items.find(el => el.name === company);
+    console.log(found);
+    this.setState({ selectedCompany: found });
+  }
+
   onChangePage(pageOfItems) {
     this.setState({ page: pageOfItems });
   }
@@ -106,19 +113,6 @@ class App extends React.Component {
                     <Title hasTextColor='light'>CrunchQuest</Title>
                   </Content>
                 </LevelLeft>
-                {/* <LevelItem>
-                  <div className="field">
-                    <input
-                    id="toggleMapLabels"
-                    type="checkbox"
-                    name="toggleMapLabels"
-                    className="switch is-link"
-                    defaultChecked=''
-                    onChange={this.handleToggleMapLabels}
-                    />
-                    <label htmlFor="toggleMapLabels">Toggle Map Labels</label>
-                  </div>
-                </LevelItem> */}
                 <LevelRight>
                   <Content>
                     <Subtitle isSize={6} hasTextColor='light'><em>{`Currently viewing: ${searchLocation}`}</em></Subtitle>
@@ -147,6 +141,7 @@ class App extends React.Component {
                 <MarkerClusterMap
                   markers={this.state.mapMarkers}
                   mapLabels={this.state.mapLabels}
+                  handleMarkerNameClick={this.handleMarkerNameClick}
                 />
               </div>
             </div>
