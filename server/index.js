@@ -4,6 +4,7 @@ const mongo = require('../database-mongo/dbHelpers.js');
 const fs = require('fs');
 const axios = require('axios');
 const morgan = require('morgan');
+const logger = require('./logger.js');
 const Places = require('google-places-web').default;
 require('dotenv').config();
 
@@ -130,10 +131,11 @@ app.get('/companies', (req, res) => {
 app.get('/checkCollection', (req, res) => {
   mongo.checkCollections()
     .then((collections) => {
-      console.log('Collections: ', collections);
+      logger.info(collections);
       res.status(200).send(collections);
     })
     .catch((err) => {
+      logger.error(err);
       res.status(400).send(err);
     });
 });

@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "react-dev": "webpack -d --config ./webpack.config.js --watch",
-    "server-dev": "nodemon server/index.js",
-    "start": "node server/index.js",
+    "server-dev": "nodemon server/index.js | bunyan",
+    "start": "node server/index.js | bunyan",
     "heroku-postbuild": "webpack -p --config ./webpack.config.js --progress"
   },
   "engines": {
@@ -41,6 +41,8 @@
     "bulma": "^0.7.1",
     "bulma-extensions": "^2.2.1",
     "bulmaswatch": "^0.6.2",
+    "bunyan": "^1.8.12",
+    "bunyan-express-serializer": "^1.0.0",
     "dotenv": "^5.0.1",
     "express": "^4.16.3",
     "google-places-web": "^0.1.6",
