@@ -20,14 +20,29 @@ app.use(bodyParser.json());
 app.use(morgan('dev'));
 
 app.post('/createSearchCache', (req, res) => {
-  if (!req.body.location) {
+  let { location } = req.body;
+  if (!location) {
     res.status(400).send('Err: no location supplied');
   }
-  mongo.getLocationInfo(req.body.location)
-    .then((result) => {
-      if (result) {
-        mongo.createLocationSearchCache(result, [{ name: 'GOAT' }]);
-        res.status(200).send('Creating location search cache...');
+  mongo.getLocationInfo(location)
+    .then((locationInfo) => {
+      if (locationInfo) {
+        mongo.getCompanies(location)
+          .then((companies) => {
+            if (!companies.length) {
+              logger.error('No companies found for ', location);
+              res.status(404).send(`No companies found for ${location}`);
+            } else {
+              let companyNames = companies.map(company => company.name);
+              logger.info(`Creating location search cache for ${location}`);
+              mongo.createLocationSearchCache(locationInfo, companyNames);
+              // mongo.createLocationSearchCache(locationInfo, ['HomeAway']);
+              res.status(200).send(`Creating location search cache for ${location}`);
+            }
+          })
+          .catch((err) => {
+            throw err;
+          });
       } else {
         logger.error('Location not found');
         res.status(404).send('Location not found');
@@ -35,7 +50,7 @@ app.post('/createSearchCache', (req, res) => {
     })
     .catch((err) => {
       logger.error(err);
-      res.status(500).send('Error requesting location');
+      res.status(500).send('Error creating search cache');
     });
 });
 
@@ -134,7 +149,8 @@ app.post('/downloadAllCrunchbase', (req, res) => {
 });
 
 app.post('/companies', (req, res) => {
-  if (!req.body.location) {
+  let { location } = req.body;
+  if (!location) {
     res.status(400).send('Err: no location supplied');
   }
   mongo.checkCollections()
@@ -147,12 +163,13 @@ app.post('/companies', (req, res) => {
       });
       if (found) {
         logger.info('Valid companies found, continuing');
-        return mongo.getCompanies(req.body.location);
+        return mongo.getCompanies(location);
       } else {
         throw new Error('Uh oh, no companies in the database...');
       }
     })
     .then((results) => {
+      if (!results.length) logger.error('No companies found for ', location);
       res.status(200).send(JSON.stringify(results));
     })
     .catch((err) => {

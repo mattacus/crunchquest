@@ -6,14 +6,12 @@ const Places = require('google-places-web').default;
 Places.apiKey = process.env.GOOGLE_MAPS_KEY;
 Places.debug = false;
 
+// use this for search cache testing
+let getSearchCacheByLocation = location => db.models.NearbySearchCache.findOne({ location }).exec();
+
 let getCompanies = (location) => {
   logger.info('Get companies in ', location);
-  return db.models.Company.find().exec();
-};
-
-let getSearchCacheByLocation = (location) => {
-  // use this for search cache testing
-  return db.models.NearbySearchCache.findOne({ location: location }).exec();
+  return db.models.Company.find({ location }).exec();
 };
 
 let getLocationInfo = (location) => {
@@ -25,26 +23,34 @@ let createLocationSearchCache = (location, companyList) => {
   companyList.forEach((company) => {
     Places.nearbysearch({
       location: `${location.centerCoords.lat}, ${location.centerCoords.lng}`,
-      keyword: company.name,
+      keyword: company,
       radius: '30000',
     })
       .then((searchResults) => {
-        logger.info(searchResults);
-        const dbEntry = {
-          location: location.name,
-          searchCache: JSON.stringify(searchResults),
-        };
-        db.models.NearbySearchCache.create(dbEntry)
-          .then((done) => {
-            logger.info('Created entry for: ', location.name);
-            console.log(done);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
+        searchResults.forEach((result) => {
+          logger.info('Result: ', result);
+          if (result.place_id) {
+            Places.details({ placeid: result.place_id })
+              .then((details) => {
+                logger.info(`Got details for ${company}`);
+                const dbEntry = {
+                  name: company,
+                  location: location.name,
+                  searchDetailsCache: JSON.stringify(details),
+                };
+                return db.models.NearbySearchCache.create(dbEntry);
+              })
+              .then(() => {
+                logger.info(`Created search cache entry for: ${company} in ${location.name}`);
+              })
+              .catch((err) => {
+                logger.error(err);
+              });
+          }
+        });
       })
       .catch((err) => {
-        console.log(err);
+        logger.error(err);
       });
   });
 };

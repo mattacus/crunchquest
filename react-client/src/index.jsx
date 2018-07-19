@@ -15,8 +15,6 @@ import Pagination from './components/Pagination.jsx';
 import MarkerClusterMap from './components/MarkerClusterMap.jsx';
 import './styles/main.scss';
 
-// hardcoded location, for now
-const searchLocation = 'Austin';
 
 class App extends React.Component {
   constructor(props) {
@@ -28,6 +26,7 @@ class App extends React.Component {
       testPhoto: '',
       mapMarkers: [],
       mapLabels: true,
+      searchLocation: 'Austin',
     };
     this.handleCompanyClick = this.handleCompanyClick.bind(this);
     this.handleMarkerNameClick = this.handleMarkerNameClick.bind(this);
@@ -37,7 +36,7 @@ class App extends React.Component {
   }
 
   getCompanies() {
-    axios.post('/companies', { location: 'Austin' })
+    axios.post('/companies', { location: this.state.searchLocation })
       .then((res) => {
         console.log('Got response from database: ', res.status);
         if (res.data.length !== 0) {
@@ -115,7 +114,7 @@ class App extends React.Component {
                 </LevelLeft>
                 <LevelRight>
                   <Content>
-                    <Subtitle isSize={6} hasTextColor='light'><em>{`Currently viewing: ${searchLocation}`}</em></Subtitle>
+                  <Subtitle isSize={6} hasTextColor='light'><em>{`Currently viewing: ${this.state.searchLocation}`}</em></Subtitle>
                   </Content>
                 </LevelRight>
               </Level>
