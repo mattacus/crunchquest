@@ -37,7 +37,7 @@ class App extends React.Component {
   }
 
   getCompanies() {
-    axios.get('/companies')
+    axios.post('/companies', { location: 'Austin' })
       .then((res) => {
         console.log('Got response from database: ', res.status);
         if (res.data.length !== 0) {

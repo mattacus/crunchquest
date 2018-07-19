@@ -62,7 +62,7 @@ app.post('/searchCacheTest', (req, res) => {
 // smaller subset for testing
 app.post('/downloadCrunchbase100', (req, res) => {
   let { location } = req.body;
-  console.log('Querying location: ', location);
+  logger.info('Querying location: ', location);
   axios.get('https://api.crunchbase.com/v3.1/odm-organizations', {
     params: {
       locations: location,
@@ -70,26 +70,20 @@ app.post('/downloadCrunchbase100', (req, res) => {
       user_key: process.env.CRUNCHBASE_KEY,
     },
   })
-    .then((result) => {
-      mongo.saveCrunchbaseCompanies(result.data, location)
-        .then(() => {
-          console.log('Success writing companies to db');
-          res.status(201).send(JSON.stringify('Success writing companies to db'));
-        })
-        .catch((err) => {
-          console.log('Error writing to db: ', err.message);
-          res.status(500).send(JSON.stringify(err.message));
-        });
+    .then(result => mongo.saveCrunchbaseCompanies(result.data, location))
+    .then(() => {
+      logger.info('Success writing companies to db');
+      res.status(201).send(JSON.stringify('Success writing companies to db'));
     })
     .catch((err) => {
-      console.log('Error: ', err);
+      logger.error(err);
       res.status(404).send(JSON.stringify('Error retrieving from crunchbase'));
     });
 });
 
 app.post('/downloadAllCrunchbase', (req, res) => {
   let { location } = req.body;
-  console.log('Querying location: ', location);
+  logger.info('Querying location: ', location);
   let NUM_PAGES = 1;
   axios.get('https://api.crunchbase.com/v3.1/odm-organizations', {
     params: {
@@ -101,7 +95,7 @@ app.post('/downloadAllCrunchbase', (req, res) => {
     .then((result) => {
       if (result.data.data.paging.number_of_pages > 1) {
         NUM_PAGES = result.data.data.paging.number_of_pages;
-        console.log('Num of result pages: ', NUM_PAGES);
+        logger.info('Num of result pages: ', NUM_PAGES);
         for (let pageNum = 1; pageNum <= NUM_PAGES; pageNum++) {
           axios.get('https://api.crunchbase.com/v3.1/odm-organizations', {
             params: {
@@ -111,58 +105,58 @@ app.post('/downloadAllCrunchbase', (req, res) => {
               user_key: process.env.CRUNCHBASE_KEY,
             },
           })
-            .then((page) => {
-              mongo.saveCrunchbaseCompanies(page.data, location)
-                .then(() => {
-                  console.log(`Successfully pulled data into db: page ${pageNum} of ${NUM_PAGES}`);
-                })
-                .catch((err) => {
-                  console.log('Error writing to db: ', err.message);
-                });
+            .then(page => mongo.saveCrunchbaseCompanies(page.data, location))
+            .then(() => {
+              logger.info(`Successfully pulled data into db: page ${pageNum} of ${NUM_PAGES}`);
             })
             .catch((err) => {
-              console.log(err);
+              logger.error(err);
             });
         }
         res.status(201).send(JSON.stringify('Writing companies to db...'));
       } else {
-        console.log('downloadAll fell through to single case');
+        logger.info('downloadAll fell through to single case');
         mongo.saveCrunchbaseCompanies(result.data, location)
           .then(() => {
-            console.log('Successfully pulled data into db');
+            logger.info('Successfully pulled data into db');
             res.status(201).send(JSON.stringify('Success writing companies to db'));
           })
           .catch((err) => {
-            console.log('Error writing to db: ', err.message);
+            logger.error(err);
             res.status(500).send(JSON.stringify(err.message));
           });
       }
     })
     .catch((err) => {
-      console.log('Error: ', err);
-      res.status(404).send(JSON.stringify('Error retrieving from crunchbase'));
+      logger.error(err);
+      res.status(404).send('Error retrieving from crunchbase');
     });
 });
 
-app.get('/companies', (req, res) => {
+app.post('/companies', (req, res) => {
+  if (!req.body.location) {
+    res.status(400).send('Err: no location supplied');
+  }
   mongo.checkCollections()
     .then((collections) => {
-      if (collections) {
-        console.log('Valid database found, continuing');
-        mongo.getCompanies('Austin') // hardcoded to Austin for now
-          .then((results) => {
-            res.status(200).send(JSON.stringify(results));
-          })
-          .catch((err) => {
-            console.log('Error fetching companies from db', err.message);
-            res.status(500).send(JSON.stringify(err.message));
-          });
+      let found = false;
+      collections.forEach((collection) => {
+        if (collection.name === 'companies') {
+          found = true;
+        }
+      });
+      if (found) {
+        logger.info('Valid companies found, continuing');
+        return mongo.getCompanies(req.body.location);
       } else {
-        res.status(500).send('{[]}');
+        throw new Error('Uh oh, no companies in the database...');
       }
     })
+    .then((results) => {
+      res.status(200).send(JSON.stringify(results));
+    })
     .catch((err) => {
-      console.log(err);
+      logger.error(err);
       res.status(500).send(JSON.stringify(err.message));
     });
 });
@@ -187,28 +181,28 @@ app.get('/googleMapsAPIKey', (req, res) => {
   }
 });
 
-app.get('/googleMapsInfo', (req, res) => {
-  // google maps API test
-  axios.get('https://maps.googleapis.com/maps/api/place/photo', {
-    params: {
-      maxWidth: 400,
-      photoreference: 'CmRaAAAAu1OI71Feg5NFCFp8_4YYlGwkUaZAqAJeMokzT56HGYfVgnbzYXVr36-9vD8j2GWlHFpADvKCVjMy8QZOmGRqqQ_y5g_uFOtikJll7YsxkRMqghgQXYToLeLO7Az-m3N1EhDjr8VbVmrtIWEVH9CpeDFnGhSkwlsimFfN7cBTiZjMXAyQ-dcfOQ',
-      key: process.env.GOOGLE_MAPS_KEY,
-    },
-    // responseType: 'image/jpeg',
-  })
-    .then((results) => {
-      // console.log(results.data);
-      // results.data.pipe(fs.createWriteStream('test.jpg'))
-      res.status(200).send('Server will write image data');
-    })
-    .catch((err) => {
-      console.log('Error fetching image data', err);
-      res.status(400).send(err);
-    });
-});
+// app.get('/googleMapsInfo', (req, res) => {
+//   // google maps API test
+//   axios.get('https://maps.googleapis.com/maps/api/place/photo', {
+//     params: {
+//       maxWidth: 400,
+//       photoreference: 'CmRaAAAAu1OI71Feg5NFCFp8_4YYlGwkUaZAqAJeMokzT56HGYfVgnbzYXVr36-9vD8j2GWlHFpADvKCVjMy8QZOmGRqqQ_y5g_uFOtikJll7YsxkRMqghgQXYToLeLO7Az-m3N1EhDjr8VbVmrtIWEVH9CpeDFnGhSkwlsimFfN7cBTiZjMXAyQ-dcfOQ',
+//       key: process.env.GOOGLE_MAPS_KEY,
+//     },
+//     // responseType: 'image/jpeg',
+//   })
+//     .then((results) => {
+//       // logger.info(results.data);
+//       // results.data.pipe(fs.createWriteStream('test.jpg'))
+//       res.status(200).send('Server will write image data');
+//     })
+//     .catch((err) => {
+//       logger.error(err);
+//       res.status(400).send(err);
+//     });
+// });
 
 app.listen(PORT, () => {
-  console.log('listening on port: ', PORT);
+  logger.info('listening on port: ', PORT);
 });
 
