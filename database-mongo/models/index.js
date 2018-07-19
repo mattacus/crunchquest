@@ -3,11 +3,14 @@ require('dotenv').config();
 
 console.log('Using database: ', process.env.MONGODB_URI);
 
-mongoose.connect(process.env.MONGODB_URI, {
-  reconnectTries: Number.MAX_VALUE, // Never stop trying to reconnect
-  reconnectInterval: 500, // Reconnect every 1000ms
-  poolSize: 10, // Maintain up to 10 socket connections, // Reconnect every 500ms
-});
+mongoose.connect(process.env.MONGODB_URI);
+
+// alt config for caching
+// mongoose.connect(process.env.MONGODB_URI, {
+//   reconnectTries: Number.MAX_VALUE, // Never stop trying to reconnect
+//   reconnectInterval: 500, // Reconnect every 1000ms
+//   poolSize: 10, // Maintain up to 10 socket connections, // Reconnect every 500ms
+// });
 
 const db = mongoose.connection;
 

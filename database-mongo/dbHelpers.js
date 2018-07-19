@@ -6,6 +6,40 @@ const Places = require('google-places-web').default;
 Places.apiKey = process.env.GOOGLE_MAPS_KEY;
 Places.debug = false;
 
+// function to attempt correlation between Crunchbase & Google maps data
+let correlateMapData = (placeResults, company) => {
+  // logger.debug('placeResults: ', placeResults);
+  // logger.debug('company: ', company);
+
+  if (!placeResults.length) {
+    return undefined;
+  }
+  let locationDetails = {};
+  for (let i = 0; i < placeResults.length; i++) {
+    let { searchDetailsCache } = placeResults[i];
+
+    if (searchDetailsCache.website) {
+      let mapsName = searchDetailsCache.website.replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').replace(/.com.*/, '');
+      let crunchName = company.homepage_url.replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').replace(/.com.*/, '');
+      logger.info(`Website retrieved for ${company.name}: ${searchDetailsCache.website}`);
+      logger.info('Maps website post-regex: ', mapsName);
+      logger.info('Crunchbase website: ', company.homepage_url);
+      logger.info('Crunchbase website post-regex: ', crunchName);
+      if (mapsName === crunchName) {
+        logger.info(`Found match for ${company.name}!`);
+        locationDetails = {
+          suggestedAddress: searchDetailsCache.url,
+          locationLatResult: String(searchDetailsCache.geometry.location.lat),
+          locationLngResult: String(searchDetailsCache.geometry.location.lng),
+          placeIDResult: String(searchDetailsCache.id),
+        };
+        return locationDetails; // return found match
+      }
+    }
+  }
+  return null; // nothing found
+};
+
 // use this for search cache testing
 let getSearchCacheByLocation = location => db.models.NearbySearchCache.findOne({ location }).exec();
 
@@ -91,110 +125,47 @@ let saveCrunchbaseCompanies = (crunchbaseData, searchLocation) => {
   return Promise.all(dbSavePromises);
 };
 
-let OLD_mongoSave = (rawData) => {
-  // format of crunchbase data
-  let companyList = rawData.data.items;
-  let promisesArray = [];
-  // map to mongo schema
-  companyList = companyList.forEach((company) => {
-    let placeResults = [];
-    let locationLatResult = '';
-    let locationLngResult = '';
-    let placeIDResult = '';
+let matchAddressToCompanies = (location) => {
+  logger.info('Gathering companies from database...');
 
-    // attempt to correlate google maps object with crunchbase url
-    Places.nearbysearch({
-      location: '30.3079827, -97.8934851', // center of Austin
-      keyword: company.properties.name,
-      radius: '30000',
-    })
-      .then((places) => {
-        let placePromises = [];
-        places.forEach((place) => {
-          if (place.place_id) {
-            let placeSearch = Places.details({ placeid: place.place_id })
-              .then((details) => {
-                placeResults.push(details);
-              })
-              .catch((err) => {
-                console.log('Error in place details search: ', err);
-                placeResults.push('');
-              });
-            placePromises.push(placeSearch);
-          }
-        });
-        return Promise.all(placePromises);
-      })
-      .then(() => {
-        // console.log(placeResults);
-        let location = placeResults.reduce((acc, place) => {
-          // console.log(place);
-          let suggestedAddress = '';
-          if (place.website) {
-            let mapsName = place.website.replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').replace(/.com.*/, '');
-            let crunchName = company.properties.homepage_url.replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').replace(/.com.*/, '');
-            console.log(`Website retrieved for ${company.properties.name}: ${place.website}`);
-            console.log('Maps website post-regex: ', mapsName);
-            console.log('Crunchbase website: ', company.properties.homepage_url);
-            console.log('Crunchbase website post-regex: ', crunchName);
-            if (mapsName === crunchName) {
-              console.log(`Found match for ${company.properties.name}!`);
-              suggestedAddress = place.url;
-              locationLatResult = String(place.geometry.location.lat);
-              locationLngResult = String(place.geometry.location.lng);
-              placeIDResult = String(place.id);
-              console.log('suggestedAddress: ', suggestedAddress);
-              console.log('locationLatResult: ', locationLatResult);
-              console.log('locationLngResult: ', locationLngResult);
-              console.log('placeIDResult: ', placeIDResult);
+  return db.models.Company.find({ location }).exec()
+    .then((companies) => {
+      logger.info('Companies found');
+      logger.info('Loading data from search cache...');
+      companies.forEach((company) => {
+      // for (let i = 0; i < 10; i++) {
+        // let company = companies[i];
+        db.models.NearbySearchCache.find({ company: company.name })
+          .then((searchResults) => {
+
+            let locationDetails = correlateMapData(searchResults, company);
+            if (locationDetails) {
+              // logger.debug(locationDetails);
+              company.update({
+                address: locationDetails.suggestedAddress,
+                location_lat: locationDetails.locationLatResult,
+                location_long: locationDetails.locationLngResult,
+                place_id: locationDetails.placeIDResult,
+              }).exec()
+                .then(() => {
+                  logger.info('Added location info for', company.name);
+                })
+                .catch((err) => {
+                  logger.error(err);
+                });
             } else {
-              console.log('Match not found, continuing...');
+              logger.info('No matches found for', company.name);
             }
-          }
-          return suggestedAddress || acc;
-        }, '');
-        return location;
-      })
-      .then((location) => {
-        const dbEntry = {
-          name: company.properties.name,
-          profile_image: company.properties.profile_image_url,
-          short_description: company.properties.short_description,
-          homepage_url: company.properties.homepage_url,
-          linkedin_url: company.properties.linkedin_url,
-          crunchbase_url: `https://www.crunchbase.com/organization/${company.properties.permalink}`,
-          indeed_url: `https://www.indeed.com/jobs?q=${company.properties.name}&l=Austin%2C+TX`,
-          address: location,
-          location_lat: locationLatResult,
-          location_long: locationLngResult,
-          place_id: placeIDResult,
-        };
-        let creationPromise = db.models.Company.create(dbEntry);
-        creationPromise.catch((err) => { console.log('Error creating db entry: ', err); });
-        promisesArray.push(creationPromise);
-      })
-      .catch((err) => {
-        // workaround to generate db entry even if location lookup fails
-        console.log(`Error in Query ${company.properties.name}: ${err}`);
-        const dbEntry = {
-          name: company.properties.name,
-          profile_image: company.properties.profile_image_url,
-          short_description: company.properties.short_description,
-          homepage_url: company.properties.homepage_url,
-          linkedin_url: company.properties.linkedin_url,
-          crunchbase_url: `https://www.crunchbase.com/organization/${company.properties.permalink}`,
-          indeed_url: `https://www.indeed.com/jobs?q=${company.properties.name}&l=Austin%2C+TX`,
-          address: undefined,
-          location_lat: undefined,
-          location_long: undefined,
-          place_id: undefined,
-        };
-        let creationPromise = db.models.Company.create(dbEntry);
-        creationPromise.catch((err) => { console.log('Error creating db entry: ', err); });
-        promisesArray.push(creationPromise);
+          })
+          .catch((err) => {
+            logger.error(err);
+          });
+      // }
       });
-  });
-  return Promise.all(promisesArray);
+    })
+    .catch((err) => {
+      logger.error(err);
+    });
 };
 
 let checkCollections = () => {
@@ -208,3 +179,4 @@ module.exports.checkCollections = checkCollections;
 module.exports.getLocationInfo = getLocationInfo;
 module.exports.createLocationSearchCache = createLocationSearchCache;
 module.exports.saveCrunchbaseCompanies = saveCrunchbaseCompanies;
+module.exports.matchAddressToCompanies = matchAddressToCompanies;

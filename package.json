@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "react-dev": "webpack -d --config ./webpack.config.js --watch",
-    "server-dev": "nodemon server/index.js | bunyan",
+    "server-dev": "nodemon server/index.js | bunyan -o short",
     "start": "node server/index.js | bunyan",
     "heroku-postbuild": "webpack -p --config ./webpack.config.js --progress"
   },

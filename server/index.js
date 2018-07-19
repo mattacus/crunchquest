@@ -100,6 +100,20 @@ app.post('/searchCacheTest', (req, res) => {
     });
 });
 
+app.post('/matchMapsData', (req, res) => {
+  if (!req.body.location) {
+    res.status(400).send('Err: no location supplied');
+  }
+  mongo.matchAddressToCompanies(req.body.location)
+    .then(() => {
+      res.status(200).send('OK');
+    })
+    .catch((err) => {
+      logger.error(err);
+      res.status(400).send('Something went wrong in matchMapsData');
+    });
+});
+
 // smaller subset for testing
 app.post('/downloadCrunchbase100', (req, res) => {
   let { location } = req.body;
