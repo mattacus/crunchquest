@@ -20,35 +20,43 @@ let getLocationInfo = (location) => {
 };
 
 let createLocationSearchCache = (location, companyList) => {
+  let placePromises = [];
   companyList.forEach((company) => {
-    Places.nearbysearch({
+    let currentSearch = Places.nearbysearch({
       location: `${location.centerCoords.lat}, ${location.centerCoords.lng}`,
       keyword: company,
       radius: '30000',
-    })
-      .then((searchResults) => {
-        searchResults.forEach((result) => {
-          logger.info('Result: ', result);
-          if (result.place_id) {
-            Places.details({ placeid: result.place_id })
-              .then((details) => {
-                logger.info(`Got details for ${company}`);
-                const dbEntry = {
-                  company,
-                  location: location.name,
-                  searchDetailsCache: details,
-                };
-                return db.models.NearbySearchCache.create(dbEntry);
-              })
-              .then(() => {
-                logger.info(`Created search cache entry for: ${company} in ${location.name}`);
-              })
-              .catch((err) => {
-                logger.error(err);
-              });
-          }
+    });
+    placePromises.push(currentSearch);
+    currentSearch.then((searchResults) => {
+      let detailsPromises = [];
+
+      // create a promise for each place details lookup
+      searchResults.forEach((result) => {
+        if (result.place_id) {
+          detailsPromises.push(Places.details({ placeid: result.place_id }));
+        }
+      });
+
+      // batch add search details to cache
+      Promise.all(detailsPromises)
+        .then((details) => {
+          logger.info(`Got search results for ${company}`);
+          const documents = details.map(item => ({
+            company,
+            location: location.name,
+            searchDetailsCache: item,
+          }));
+          // logger.debug(documents);
+          return db.models.NearbySearchCache.insertMany(documents);
+        })
+        .then(() => {
+          logger.info(`Created search cache entry for: ${company} in ${location.name}`);
+        })
+        .catch((err) => {
+          logger.error(err);
         });
-      })
+    })
       .catch((err) => {
         if (err == 'Error: ZERO_RESULTS') {
           logger.warn(err);
@@ -57,6 +65,8 @@ let createLocationSearchCache = (location, companyList) => {
         }
       });
   });
+  // logger.debug('Promises: ', placePromises);
+  return Promise.all(placePromises.map(p => p.catch(() => undefined)));
 };
 
 let saveCrunchbaseCompanies = (crunchbaseData, searchLocation) => {

@@ -8,6 +8,7 @@ const morgan = require('morgan');
 require('dotenv').config();
 
 const PORT = process.env.PORT || 3000;
+const BATCH_LENGTH = 100; // length used to batch caching requests
 
 const app = express();
 
@@ -35,13 +36,38 @@ app.post('/createSearchCache', (req, res) => {
             } else {
               let companyNames = companies.map(company => company.name);
               logger.info(`Creating location search cache for ${location}`);
-              // mongo.createLocationSearchCache(locationInfo, companyNames);
-              mongo.createLocationSearchCache(locationInfo, ['829hfahg2kjas']);
+              let spliceLength = companyNames.length < BATCH_LENGTH ?
+                companyNames.length : BATCH_LENGTH;
+              // mongo.createLocationSearchCache(locationInfo, ['HomeAway']);
+
+              // recursive function for batch processing
+              let next = () => {
+                logger.debug(`Next called with length ${companyNames.length}`);
+                if (companyNames.length > 0) {
+                  let batch = companyNames.splice(0, spliceLength);
+                  let searchPromise = mongo.createLocationSearchCache(locationInfo, batch);
+                  searchPromise
+                    .then(() => {
+                      logger.info(`Completed batch of ${spliceLength}...`);
+                      next();
+                    })
+                    .catch((err) => {
+                      logger.error(err);
+                    });
+                } else {
+                  logger.info('Completed batch processing');
+                }
+              };
+
+              // kick off batch process
+              next();
+
+              // logger.debug(companyNames);
               res.status(200).send(`Creating location search cache for ${location}`);
             }
           })
           .catch((err) => {
-            throw err;
+            logger.error(err);
           });
       } else {
         logger.error('Location not found');
