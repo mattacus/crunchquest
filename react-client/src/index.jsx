@@ -8,6 +8,7 @@ import {
   Icon, Title, Subtitle, Column, Columns, Notification,
   Level, LevelItem, LevelLeft, LevelRight,
 } from 'bloomer';
+import { ClimbingBoxLoader} from 'react-spinners';
 
 import CompanyList from './components/CompanyList.jsx';
 import CompanyInfo from './components/CompanyInfo.jsx';
@@ -100,12 +101,64 @@ class App extends React.Component {
   }
 
   render() {
-    return (
-      <div>
-        <Hero isColor='dark' isSize='small' >
-          <HeroHeader>
-          </HeroHeader>
-          <HeroBody>
+    if (this.state.items.length) {
+      return (
+        <div>
+          <Hero isColor='dark' isSize='small' >
+            <HeroHeader>
+            </HeroHeader>
+            <HeroBody>
+                <Level>
+                  <LevelLeft>
+                    <Content>
+                      <Title hasTextColor='light'>CrunchQuest</Title>
+                    </Content>
+                  </LevelLeft>
+                  <LevelRight>
+                    <Content>
+                    <Subtitle isSize={6} hasTextColor='light'><em>{`Currently viewing: ${this.state.searchLocation}`}</em></Subtitle>
+                    </Content>
+                  </LevelRight>
+                </Level>
+            </HeroBody>
+          </Hero>
+            <div className="tile is-ancestor">
+              <div className="tile is-4 is-vertical is-parent">
+                <div className="tile is-child box">
+                  <CompanyList items={this.state.page}
+                    selectedCompany={this.state.selectedCompany}
+                    handleCompanyClick={this.handleCompanyClick} />
+                  <Container isFluid style={{ marginTop: 10 }}>
+                    <Pagination items={this.state.items} onChangePage={this.onChangePage} />
+                  </Container>
+                </div>
+                <div className="tile is-child box">
+                  <CompanyInfo item={this.state.selectedCompany} />
+                </div>
+              </div>
+              <div className="tile is-parent">
+                <div className="tile is-child box">
+                  <MarkerClusterMap
+                    markers={this.state.mapMarkers}
+                    mapLabels={this.state.mapLabels}
+                    handleMarkerNameClick={this.handleMarkerNameClick}
+                    center={this.state.selectedCompany.address ? {
+                        lat: Number(this.state.selectedCompany.location_lat),
+                        lng: Number(this.state.selectedCompany.location_long),
+                    } : { lat: 30.3079827, lng: -97.8934851 }}
+                  />
+                </div>
+              </div>
+            </div>
+        </div>
+      );
+    } else {
+      return (
+        <div>
+          <Hero isColor='dark' isSize='small' >
+            <HeroHeader>
+            </HeroHeader>
+            <HeroBody>
               <Level>
                 <LevelLeft>
                   <Content>
@@ -114,42 +167,28 @@ class App extends React.Component {
                 </LevelLeft>
                 <LevelRight>
                   <Content>
-                  <Subtitle isSize={6} hasTextColor='light'><em>{`Currently viewing: ${this.state.searchLocation}`}</em></Subtitle>
+                    <Subtitle isSize={6} hasTextColor='light'><em>{`Currently viewing: ${this.state.searchLocation}`}</em></Subtitle>
                   </Content>
                 </LevelRight>
               </Level>
-          </HeroBody>
-        </Hero>
-          <div className="tile is-ancestor">
-            <div className="tile is-4 is-vertical is-parent">
-              <div className="tile is-child box">
-                <CompanyList items={this.state.page}
-                  selectedCompany={this.state.selectedCompany}
-                  handleCompanyClick={this.handleCompanyClick} />
-                <Container isFluid style={{ marginTop: 10 }}>
-                  <Pagination items={this.state.items} onChangePage={this.onChangePage} />
-                </Container>
-              </div>
-              <div className="tile is-child box">
-                <CompanyInfo item={this.state.selectedCompany} />
-              </div>
-            </div>
-            <div className="tile is-parent">
-              <div className="tile is-child box">
-                <MarkerClusterMap
-                  markers={this.state.mapMarkers}
-                  mapLabels={this.state.mapLabels}
-                  handleMarkerNameClick={this.handleMarkerNameClick}
-                  center={this.state.selectedCompany.address ? {
-                      lat: Number(this.state.selectedCompany.location_lat),
-                      lng: Number(this.state.selectedCompany.location_long),
-                  } : { lat: 30.3079827, lng: -97.8934851 }}
-                />
-              </div>
-            </div>
-          </div>
-      </div>
-    );
+            </HeroBody>
+          </Hero>
+          <Level>
+            <LevelItem>
+              <Title isSuze={2} hasTextColor='light'>Loading companies from database...</Title>
+            </LevelItem>
+          </Level>
+          <Level>
+            <LevelItem>
+              <ClimbingBoxLoader
+                color={'#1abc9c'}
+                loading={this.state.loading}
+              />
+            </LevelItem>
+          </Level>
+        </div>
+      );
+    }
   }
 }
 

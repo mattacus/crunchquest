@@ -17,7 +17,10 @@ class CompanyListItem extends React.Component {
     if (this.props.isActive) { opts.isActive = 'isActive'; }
     return (
       <li>
-        <MenuLink onClick={this.handleClick} {...opts}>{this.props.item.name}</MenuLink>
+        <MenuLink onClick={this.handleClick} {...opts}>
+          {this.props.item.address ?
+            <div><strong>{this.props.item.name}</strong></div> : <div>{this.props.item.name}</div>}
+        </MenuLink>
       </li>
     );
   }

@@ -38,6 +38,7 @@ class MarkerClusterMap extends React.Component {
         <MarkerClusterer
           onClick={this.props.onMarkerClustererClick}
           averageCenter
+          ignoreHidden
           enableRetinaIcons
           gridSize={60}
         >
@@ -46,7 +47,7 @@ class MarkerClusterMap extends React.Component {
               key={marker.id}
               position={{ lat: marker.latitude, lng: marker.longitude }}
             >
-              {this.state.isOpen && <InfoWindow>
+              {this.state.isOpen && <InfoWindow defaultOptions={{ disableAutoPan: true }}>
                 <a onClick={() => { this.onTitleClick(marker.name); }}>{marker.name}</a>
               </InfoWindow>}
             </Marker>
