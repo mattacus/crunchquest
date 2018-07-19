@@ -7,7 +7,7 @@ Places.apiKey = process.env.GOOGLE_MAPS_KEY;
 Places.debug = false;
 
 // function to attempt correlation between Crunchbase & Google maps data
-let correlateMapData = (placeResults, company) => {
+let correlateMapData = (placeResults, company, last) => {
   // logger.debug('placeResults: ', placeResults);
   // logger.debug('company: ', company);
 
@@ -129,10 +129,12 @@ let matchAddressToCompanies = (location) => {
   logger.info('Gathering companies from database...');
   let companyCount;
   let successCount = 0;
-  db.models.Company.count({ location }).exec()
-    .then((count) => {
-      companyCount = count;
-    })
+  let addressUpdatePromises = [];
+  let countPromise = db.models.Company.count({ location }).exec();
+  // addressUpdatePromises.push(countPromise);
+  countPromise.then((count) => {
+    companyCount = count;
+  })
     .catch((err) => {
       logger.error(err);
     });
@@ -141,6 +143,8 @@ let matchAddressToCompanies = (location) => {
     .then((companies) => {
       logger.info('Companies found');
       logger.info('Loading data from search cache...');
+      logger.debug('last company: ', companies[companies.length - 1].name);
+
       companies.forEach((company, index) => {
       // for (let i = 0; i < 10; i++) {
         // let company = companies[i];
@@ -150,36 +154,28 @@ let matchAddressToCompanies = (location) => {
             if (locationDetails) {
               // logger.debug(locationDetails);
               successCount += 1;
-              company.update({
+              let addressUpdate = company.update({
                 address: locationDetails.suggestedAddress,
                 location_lat: locationDetails.locationLatResult,
                 location_long: locationDetails.locationLngResult,
                 place_id: locationDetails.placeIDResult,
-              }).exec()
-                .then(() => {
-                  logger.info('Added location info for', company.name);
-                  // on last element, publish success rate
-                  if (index === companies.length - 1) {
+              }).exec();
+              addressUpdatePromises.push(addressUpdate);
+              // on last element, publish success rate
+              if (index >= companies.length - 1) {
+                Promise.all(addressUpdatePromises.map(p => p.catch(() => undefined)))
+                  .then(() => {
                     logger.info(`Located ${successCount}/${companyCount} companies`);
                     if (companyCount > 0) {
-                      logger.info(`Success rate: 
-                      ${Math.round((successCount / companyCount) * 100)}%`);
+                      logger.info(`Success rate: ${Math.round((successCount / companyCount) * 100)}%`);
                     }
-                  }
-                })
-                .catch((err) => {
-                  logger.error(err);
-                });
+                  })
+                  .catch((err) => {
+                    logger.error(err);
+                  });
+              }
             } else {
               logger.info('No matches found for', company.name);
-              // on last element, publish success rate
-              if (index === companies.length - 1) {
-                logger.info(`Located ${successCount}/${companyCount} companies`);
-                if (companyCount > 0) {
-                  logger.info(`Success rate: 
-                      ${Math.round((successCount / companyCount) * 100)}%`);
-                }
-              }
             }
           })
           .catch((err) => {
