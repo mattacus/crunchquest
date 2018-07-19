@@ -35,8 +35,8 @@ app.post('/createSearchCache', (req, res) => {
             } else {
               let companyNames = companies.map(company => company.name);
               logger.info(`Creating location search cache for ${location}`);
-              mongo.createLocationSearchCache(locationInfo, companyNames);
-              // mongo.createLocationSearchCache(locationInfo, ['HomeAway']);
+              // mongo.createLocationSearchCache(locationInfo, companyNames);
+              mongo.createLocationSearchCache(locationInfo, ['829hfahg2kjas']);
               res.status(200).send(`Creating location search cache for ${location}`);
             }
           })

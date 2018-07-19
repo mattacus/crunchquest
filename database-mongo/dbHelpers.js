@@ -34,9 +34,9 @@ let createLocationSearchCache = (location, companyList) => {
               .then((details) => {
                 logger.info(`Got details for ${company}`);
                 const dbEntry = {
-                  name: company,
+                  company,
                   location: location.name,
-                  searchDetailsCache: JSON.stringify(details),
+                  searchDetailsCache: details,
                 };
                 return db.models.NearbySearchCache.create(dbEntry);
               })
@@ -50,7 +50,11 @@ let createLocationSearchCache = (location, companyList) => {
         });
       })
       .catch((err) => {
-        logger.error(err);
+        if (err == 'Error: ZERO_RESULTS') {
+          logger.warn(err);
+        } else {
+          logger.error(err);
+        }
       });
   });
 };

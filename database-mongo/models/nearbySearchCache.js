@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 
 const nearbySearchCacheSchema = new mongoose.Schema({
-  name: String,
+  company: String,
   location: String,
-  searchDetailsCache: String, // => Just dump everything into stringified JSON string for now
+  searchDetailsCache: Object, // => Just dump everything into stringified JSON string for now
 });
 
 module.exports = mongoose.model('NearbySearchCache', nearbySearchCacheSchema);
