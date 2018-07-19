@@ -6,6 +6,11 @@ const Places = require('google-places-web').default;
 Places.apiKey = process.env.GOOGLE_MAPS_KEY;
 Places.debug = false;
 
+let getCompanies = (location) => {
+  logger.info('Get companies in ', location);
+  return db.models.Company.find().exec();
+};
+
 let getSearchCacheByLocation = (location) => {
   // use this for search cache testing
   return db.models.NearbySearchCache.findOne({ location: location }).exec();
@@ -44,7 +49,29 @@ let createLocationSearchCache = (location, companyList) => {
   });
 };
 
-let mongoSave = (rawData) => {
+let saveCrunchbaseCompanies = (crunchbaseData, searchLocation) => {
+  let companies = crunchbaseData.data.items;
+  let dbSavePromises = [];
+  companies.forEach((company) => {
+    const dbEntry = {
+      name: company.properties.name,
+      location: searchLocation || null,
+      profile_image: company.properties.profile_image_url,
+      short_description: company.properties.short_description,
+      homepage_url: company.properties.homepage_url,
+      linkedin_url: company.properties.linkedin_url,
+      crunchbase_url: `https://www.crunchbase.com/organization/${company.properties.permalink}`,
+      indeed_url: `https://www.indeed.com/jobs?q=${company.properties.name}&l=Austin%2C+TX`,
+    };
+    let creationPromise = db.models.Company.create(dbEntry);
+    creationPromise.catch((err) => { console.log('Error creating db entry: ', err); });
+    dbSavePromises.push(creationPromise);
+  });
+
+  return Promise.all(dbSavePromises);
+};
+
+let OLD_mongoSave = (rawData) => {
   // format of crunchbase data
   let companyList = rawData.data.items;
   let promisesArray = [];
@@ -155,8 +182,9 @@ let checkCollections = () => {
   return db.conn.db.listCollections().toArray();
 };
 
-module.exports.mongoSave = mongoSave;
+module.exports.getCompanies = getCompanies;
 module.exports.getSearchCacheByLocation = getSearchCacheByLocation;
 module.exports.checkCollections = checkCollections;
 module.exports.getLocationInfo = getLocationInfo;
 module.exports.createLocationSearchCache = createLocationSearchCache;
+module.exports.saveCrunchbaseCompanies = saveCrunchbaseCompanies;

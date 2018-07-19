@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const crunchbaseSchema = new mongoose.Schema({
   name: String,
+  location: String,
   profile_image: String,
   short_description: String,
   homepage_url: String,

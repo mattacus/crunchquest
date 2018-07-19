@@ -19,32 +19,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(morgan('dev'));
 
-app.post('/download', (req, res) => {
-  console.log('Querying location: ', req.body.location);
-  axios.get('https://api.crunchbase.com/v3.1/odm-organizations', {
-    params: {
-      locations: req.body.location,
-      organization_types: 'company',
-      user_key: process.env.CRUNCHBASE_KEY,
-    },
-  })
-    .then((result) => {
-      mongo.mongoSave(result.data)
-        .then(() => {
-          console.log('Successfully pulled data into db');
-          res.status(201).send(JSON.stringify('Success writing companies to db'));
-        })
-        .catch((err) => {
-          console.log('Error writing to db: ', err.message);
-          res.status(500).send(JSON.stringify(err.message));
-        });
-    })
-    .catch((err) => {
-      console.log('Error: ', err);
-      res.status(404).send(JSON.stringify('Error retrieving from crunchbase'));
-    });
-});
-
 app.post('/createSearchCache', (req, res) => {
   if (!req.body.location) {
     res.status(400).send('Err: no location supplied');
@@ -52,7 +26,7 @@ app.post('/createSearchCache', (req, res) => {
   mongo.getLocationInfo(req.body.location)
     .then((result) => {
       if (result) {
-        helpers.createLocationSearchCache(result, [{ name: 'GOAT' }]);
+        mongo.createLocationSearchCache(result, [{ name: 'GOAT' }]);
         res.status(200).send('Creating location search cache...');
       } else {
         logger.error('Location not found');
@@ -85,14 +59,41 @@ app.post('/searchCacheTest', (req, res) => {
     });
 });
 
-app.post('/downloadAll', (req, res) => {
-  // TODO: get all paginated results
-  let first = true;
-  console.log('Querying location: ', req.body.location);
+// smaller subset for testing
+app.post('/downloadCrunchbase100', (req, res) => {
+  let { location } = req.body;
+  console.log('Querying location: ', location);
+  axios.get('https://api.crunchbase.com/v3.1/odm-organizations', {
+    params: {
+      locations: location,
+      organization_types: 'company',
+      user_key: process.env.CRUNCHBASE_KEY,
+    },
+  })
+    .then((result) => {
+      mongo.saveCrunchbaseCompanies(result.data, location)
+        .then(() => {
+          console.log('Success writing companies to db');
+          res.status(201).send(JSON.stringify('Success writing companies to db'));
+        })
+        .catch((err) => {
+          console.log('Error writing to db: ', err.message);
+          res.status(500).send(JSON.stringify(err.message));
+        });
+    })
+    .catch((err) => {
+      console.log('Error: ', err);
+      res.status(404).send(JSON.stringify('Error retrieving from crunchbase'));
+    });
+});
+
+app.post('/downloadAllCrunchbase', (req, res) => {
+  let { location } = req.body;
+  console.log('Querying location: ', location);
   let NUM_PAGES = 1;
   axios.get('https://api.crunchbase.com/v3.1/odm-organizations', {
     params: {
-      locations: req.body.location,
+      locations: location,
       organization_types: 'company',
       user_key: process.env.CRUNCHBASE_KEY,
     },
@@ -104,14 +105,14 @@ app.post('/downloadAll', (req, res) => {
         for (let pageNum = 1; pageNum <= NUM_PAGES; pageNum++) {
           axios.get('https://api.crunchbase.com/v3.1/odm-organizations', {
             params: {
-              locations: req.body.location,
+              locations: location,
               organization_types: 'company',
               page: pageNum,
               user_key: process.env.CRUNCHBASE_KEY,
             },
           })
             .then((page) => {
-              mongo.mongoSave(page.data)
+              mongo.saveCrunchbaseCompanies(page.data, location)
                 .then(() => {
                   console.log(`Successfully pulled data into db: page ${pageNum} of ${NUM_PAGES}`);
                 })
@@ -126,7 +127,7 @@ app.post('/downloadAll', (req, res) => {
         res.status(201).send(JSON.stringify('Writing companies to db...'));
       } else {
         console.log('downloadAll fell through to single case');
-        mongo.mongoSave(result.data)
+        mongo.saveCrunchbaseCompanies(result.data, location)
           .then(() => {
             console.log('Successfully pulled data into db');
             res.status(201).send(JSON.stringify('Success writing companies to db'));
@@ -148,7 +149,7 @@ app.get('/companies', (req, res) => {
     .then((collections) => {
       if (collections) {
         console.log('Valid database found, continuing');
-        mongo.companies.find().exec()
+        mongo.getCompanies('Austin') // hardcoded to Austin for now
           .then((results) => {
             res.status(200).send(JSON.stringify(results));
           })
