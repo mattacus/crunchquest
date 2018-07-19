@@ -2,7 +2,6 @@ const logger = require('./logger');
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongo = require('../database-mongo/dbHelpers.js');
-const fs = require('fs');
 const axios = require('axios');
 const morgan = require('morgan');
 require('dotenv').config();

@@ -8,7 +8,7 @@ import {
   Icon, Title, Subtitle, Column, Columns, Notification,
   Level, LevelItem, LevelLeft, LevelRight,
 } from 'bloomer';
-import { ClimbingBoxLoader} from 'react-spinners';
+import { ClimbingBoxLoader } from 'react-spinners';
 
 import CompanyList from './components/CompanyList.jsx';
 import CompanyInfo from './components/CompanyInfo.jsx';
@@ -182,6 +182,7 @@ class App extends React.Component {
             <LevelItem>
               <ClimbingBoxLoader
                 color={'#1abc9c'}
+                size={28}
                 loading={this.state.loading}
               />
             </LevelItem>
