@@ -127,20 +127,29 @@ let saveCrunchbaseCompanies = (crunchbaseData, searchLocation) => {
 
 let matchAddressToCompanies = (location) => {
   logger.info('Gathering companies from database...');
+  let companyCount;
+  let successCount = 0;
+  db.models.Company.count({ location }).exec()
+    .then((count) => {
+      companyCount = count;
+    })
+    .catch((err) => {
+      logger.error(err);
+    });
 
   return db.models.Company.find({ location }).exec()
     .then((companies) => {
       logger.info('Companies found');
       logger.info('Loading data from search cache...');
-      companies.forEach((company) => {
+      companies.forEach((company, index) => {
       // for (let i = 0; i < 10; i++) {
         // let company = companies[i];
         db.models.NearbySearchCache.find({ company: company.name })
           .then((searchResults) => {
-
             let locationDetails = correlateMapData(searchResults, company);
             if (locationDetails) {
               // logger.debug(locationDetails);
+              successCount += 1;
               company.update({
                 address: locationDetails.suggestedAddress,
                 location_lat: locationDetails.locationLatResult,
@@ -149,12 +158,28 @@ let matchAddressToCompanies = (location) => {
               }).exec()
                 .then(() => {
                   logger.info('Added location info for', company.name);
+                  // on last element, publish success rate
+                  if (index === companies.length - 1) {
+                    logger.info(`Located ${successCount}/${companyCount} companies`);
+                    if (companyCount > 0) {
+                      logger.info(`Success rate: 
+                      ${Math.round((successCount / companyCount) * 100)}%`);
+                    }
+                  }
                 })
                 .catch((err) => {
                   logger.error(err);
                 });
             } else {
               logger.info('No matches found for', company.name);
+              // on last element, publish success rate
+              if (index === companies.length - 1) {
+                logger.info(`Located ${successCount}/${companyCount} companies`);
+                if (companyCount > 0) {
+                  logger.info(`Success rate: 
+                      ${Math.round((successCount / companyCount) * 100)}%`);
+                }
+              }
             }
           })
           .catch((err) => {
