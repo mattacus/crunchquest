@@ -6,6 +6,7 @@ let logger = bunyan.createLogger({
   serializers: {
     err: bunyan.stdSerializers.err,
   },
+  level: 'debug',
 });
 
 module.exports = logger;
