@@ -31,13 +31,12 @@ class MarkerClusterMap extends React.Component {
     return (
       <GoogleMap
         defaultZoom={10}
-        defaultCenter={{ lat: 30.3079827, lng: -97.8934851 }}
+        defaultCenter={this.props.cityCenter}
         center={this.props.center}
       >
         <MarkerClusterer
           onClick={this.props.onMarkerClustererClick}
           averageCenter
-          ignoreHidden
           enableRetinaIcons
           gridSize={60}
         >

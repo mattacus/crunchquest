@@ -25,11 +25,10 @@ class App extends React.Component {
       items: [],
       page: [],
       selectedCompany: {},
-      testPhoto: '',
       mapMarkers: [],
       mapLabels: true,
       locations: [],
-      searchLocation: 'Austin', // default
+      activeLocation: {},
       dropdownActive: false,
     };
     this.handleCompanyClick = this.handleCompanyClick.bind(this);
@@ -41,21 +40,8 @@ class App extends React.Component {
     this.handleToggleMapLabels = this.handleToggleMapLabels.bind(this);
   }
 
-  getLocations() {
-    axios.get('locations')
-      .then((results) => {
-        let locNames = results.data.map(result => result.name);
-        this.setState({
-          locations: locNames,
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }
-
   getCompanies() {
-    axios.post('/companies', { location: this.state.searchLocation })
+    axios.post('/companies', { location: this.state.activeLocation.name })
       .then((res) => {
         console.log('Got response from database: ', res.status);
         if (res.data.length !== 0) {
@@ -86,9 +72,18 @@ class App extends React.Component {
 
   componentDidMount() {
     console.log('App mounted');
-    this.getLocations();
-    this.getCompanies();
-
+    return axios.get('locations')
+      .then((results) => {
+        this.setState({
+          locations: results.data,
+          activeLocation: results.data[0],
+        }, () => {
+          this.getCompanies();
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
     // get api key
     // axios.get('googleMapsAPIKey')
     //   .then((res) => {
@@ -122,7 +117,10 @@ class App extends React.Component {
     console.log('Item clicked');
     this.setState({
       dropdownActive: !this.state.dropdownActive,
-      searchLocation: loc,
+      activeLocation: loc,
+      selectedCompany: {},
+    }, () => {
+      this.getCompanies(); // get companies from new location
     });
   }
 
@@ -148,7 +146,7 @@ class App extends React.Component {
             </LevelLeft>
             <LevelRight>
               <Content>
-                <Subtitle isSize={6} hasTextColor='light'><em>{`Currently viewing: ${this.state.searchLocation}`}</em></Subtitle>
+                <Subtitle isSize={6} hasTextColor='light'><em>{`Currently viewing: ${this.state.activeLocation.name}`}</em></Subtitle>
                 <Dropdown isActive={this.state.dropdownActive}>
                   <DropdownTrigger onClick={this.handleDropdownClick}>
                     <Button isOutlined>
@@ -158,12 +156,13 @@ class App extends React.Component {
                   </DropdownTrigger>
                   <DropdownMenu>
                     <DropdownContent>
-                      {this.state.locations.map(location => (
+                      {this.state.locations.map((location, index) => (
                           <DropdownItem
+                            key={index}
                             href="#"
                             onClick={() => this.handleDropdownItemClick(location)}
                           >
-                          {location}
+                          {location.name}
                           </DropdownItem>
                       ))}
                     </DropdownContent>
@@ -199,10 +198,14 @@ class App extends React.Component {
                     markers={this.state.mapMarkers}
                     mapLabels={this.state.mapLabels}
                     handleMarkerNameClick={this.handleMarkerNameClick}
+                    cityCenter={this.state.activeLocation.centerCoords}
                     center={this.state.selectedCompany.address ? {
                         lat: Number(this.state.selectedCompany.location_lat),
                         lng: Number(this.state.selectedCompany.location_long),
-                    } : { lat: 30.3079827, lng: -97.8934851 }}
+                    } : {
+                        lat: Number(this.state.activeLocation.centerCoords.lat),
+                        lng: Number(this.state.activeLocation.centerCoords.lng),
+                    }}
                   />
                 </div>
               </div>
