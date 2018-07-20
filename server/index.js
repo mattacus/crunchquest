@@ -217,6 +217,14 @@ app.post('/companies', (req, res) => {
     });
 });
 
+app.get('/locations', (req, res) => {
+  mongo.getLocations()
+    .then((locations) => {
+      logger.info('Getting locations');
+      res.status(200).send(locations);
+    });
+});
+
 app.get('/checkCollections', (req, res) => {
   mongo.checkCollections()
     .then((collections) => {

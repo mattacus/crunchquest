@@ -6,7 +6,8 @@ import {
   Container, Content, Box, Hero, HeroHeader, HeroBody,
   Nav, NavLeft, NavRight, NavCenter, NavItem, Button,
   Icon, Title, Subtitle, Column, Columns, Notification,
-  Level, LevelItem, LevelLeft, LevelRight,
+  Level, LevelItem, LevelLeft, LevelRight, Dropdown,
+  DropdownTrigger, DropdownMenu, DropdownItem, DropdownContent,
 } from 'bloomer';
 import { ClimbingBoxLoader } from 'react-spinners';
 
@@ -27,13 +28,30 @@ class App extends React.Component {
       testPhoto: '',
       mapMarkers: [],
       mapLabels: true,
-      searchLocation: 'Austin',
+      locations: [],
+      searchLocation: 'Austin', // default
+      dropdownActive: false,
     };
     this.handleCompanyClick = this.handleCompanyClick.bind(this);
     this.handleMarkerNameClick = this.handleMarkerNameClick.bind(this);
+    this.handleDropdownClick = this.handleDropdownClick.bind(this);
+    this.handleDropdownItemClick = this.handleDropdownItemClick.bind(this);
     this.getCompanies = this.getCompanies.bind(this);
     this.onChangePage = this.onChangePage.bind(this);
     this.handleToggleMapLabels = this.handleToggleMapLabels.bind(this);
+  }
+
+  getLocations() {
+    axios.get('locations')
+      .then((results) => {
+        let locNames = results.data.map(result => result.name);
+        this.setState({
+          locations: locNames,
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
   getCompanies() {
@@ -68,6 +86,7 @@ class App extends React.Component {
 
   componentDidMount() {
     console.log('App mounted');
+    this.getLocations();
     this.getCompanies();
 
     // get api key
@@ -92,6 +111,21 @@ class App extends React.Component {
     this.setState({ selectedCompany: found });
   }
 
+  handleDropdownClick() {
+    console.log('Dropdown clicked');
+    this.setState({
+      dropdownActive: !this.state.dropdownActive,
+    });
+  }
+
+  handleDropdownItemClick(loc) {
+    console.log('Item clicked');
+    this.setState({
+      dropdownActive: !this.state.dropdownActive,
+      searchLocation: loc,
+    });
+  }
+
   onChangePage(pageOfItems) {
     this.setState({ page: pageOfItems });
   }
@@ -101,27 +135,50 @@ class App extends React.Component {
   }
 
   render() {
+    let heroElements = (
+      <Hero isColor='dark' isSize='small' >
+        <HeroHeader>
+        </HeroHeader>
+        <HeroBody>
+          <Level>
+            <LevelLeft>
+              <Content>
+                <Title hasTextColor='light'>CrunchQuest</Title>
+              </Content>
+            </LevelLeft>
+            <LevelRight>
+              <Content>
+                <Subtitle isSize={6} hasTextColor='light'><em>{`Currently viewing: ${this.state.searchLocation}`}</em></Subtitle>
+                <Dropdown isActive={this.state.dropdownActive}>
+                  <DropdownTrigger onClick={this.handleDropdownClick}>
+                    <Button isOutlined>
+                      <span>Choose Location</span>
+                      <Icon icon="angle-down" isSize="small" />
+                    </Button>
+                  </DropdownTrigger>
+                  <DropdownMenu>
+                    <DropdownContent>
+                      {this.state.locations.map(location => (
+                          <DropdownItem
+                            href="#"
+                            onClick={() => this.handleDropdownItemClick(location)}
+                          >
+                          {location}
+                          </DropdownItem>
+                      ))}
+                    </DropdownContent>
+                  </DropdownMenu>
+                </Dropdown>
+              </Content>
+            </LevelRight>
+          </Level>
+        </HeroBody>
+      </Hero>
+    );
     if (this.state.items.length) {
       return (
         <div>
-          <Hero isColor='dark' isSize='small' >
-            <HeroHeader>
-            </HeroHeader>
-            <HeroBody>
-                <Level>
-                  <LevelLeft>
-                    <Content>
-                      <Title hasTextColor='light'>CrunchQuest</Title>
-                    </Content>
-                  </LevelLeft>
-                  <LevelRight>
-                    <Content>
-                    <Subtitle isSize={6} hasTextColor='light'><em>{`Currently viewing: ${this.state.searchLocation}`}</em></Subtitle>
-                    </Content>
-                  </LevelRight>
-                </Level>
-            </HeroBody>
-          </Hero>
+          {heroElements}
             <div className="tile is-ancestor">
               <div className="tile is-4 is-vertical is-parent">
                 <div className="tile is-child box">
@@ -152,30 +209,13 @@ class App extends React.Component {
             </div>
         </div>
       );
-    } else {
+    } else { // loading view
       return (
         <div>
-          <Hero isColor='dark' isSize='small' >
-            <HeroHeader>
-            </HeroHeader>
-            <HeroBody>
-              <Level>
-                <LevelLeft>
-                  <Content>
-                    <Title hasTextColor='light'>CrunchQuest</Title>
-                  </Content>
-                </LevelLeft>
-                <LevelRight>
-                  <Content>
-                    <Subtitle isSize={6} hasTextColor='light'><em>{`Currently viewing: ${this.state.searchLocation}`}</em></Subtitle>
-                  </Content>
-                </LevelRight>
-              </Level>
-            </HeroBody>
-          </Hero>
+          {heroElements}
           <Level>
             <LevelItem>
-              <Title isSuze={2} hasTextColor='light'>Loading companies from database...</Title>
+              <Title isSize={2} hasTextColor='light'>Loading companies from database...</Title>
             </LevelItem>
           </Level>
           <Level>

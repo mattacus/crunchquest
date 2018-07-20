@@ -15,6 +15,10 @@ let getCompanies = (location) => {
   return db.models.Company.find({ location }).exec();
 };
 
+let getLocations = () => {
+  return db.models.Location.find().exec();
+};
+
 let getLocationInfo = (location) => {
   logger.info('Get Location: ', location);
   return db.models.Location.findOne({ name: location }).exec();
@@ -162,6 +166,7 @@ let checkCollections = () => {
 };
 
 module.exports.getCompanies = getCompanies;
+module.exports.getLocations = getLocations;
 module.exports.getSearchCacheByLocation = getSearchCacheByLocation;
 module.exports.checkCollections = checkCollections;
 module.exports.getLocationInfo = getLocationInfo;
