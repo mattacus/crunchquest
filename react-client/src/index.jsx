@@ -120,13 +120,13 @@ class App extends React.Component {
     console.log('Item clicked');
     this.setState({
       dropdownActive: !this.state.dropdownActive,
-      activeLocation: loc,
-      items: [],
-      page: [],
-      mapMarkers: [],
-      selectedCompany: {},
+      // activeLocation: loc,
+      // items: [],
+      // page: [],
+      // mapMarkers: [],
+      // selectedCompany: {},
     }, () => {
-      this.getCompanies(); // get companies from new location
+      // this.getCompanies(); // get companies from new location
     });
   }
 
