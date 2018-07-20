@@ -24,4 +24,6 @@ $ npm run react-dev  #for client
 $ npm run server-dev #for server 
 
 ```
-<aside class="warning">Warning</aside>
+# Usage
+
+**Note: The createSearchCache endpoint will make lots of requests to the Google Maps Places API, sometimes in the thousands.  These requests are not free, use this function with caution!!!**
