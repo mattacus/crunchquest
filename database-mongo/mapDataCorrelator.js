@@ -1,7 +1,7 @@
 const logger = require('../server/logger');
 
 // function to attempt correlation between Crunchbase & Google maps data
-let correlateMapData = (placeResults, company, last) => {
+let correlateMapData = (placeResults, company) => {
   // logger.debug('placeResults: ', placeResults);
   // logger.debug('company: ', company);
 

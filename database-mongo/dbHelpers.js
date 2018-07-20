@@ -7,8 +7,9 @@ const correlateMapData = require('./mapDataCorrelator.js');
 Places.apiKey = process.env.GOOGLE_MAPS_KEY;
 Places.debug = false;
 
-// use this for search cache testing
-let getSearchCacheByLocation = location => db.models.NearbySearchCache.findOne({ location }).exec();
+//
+// ─── CLIENT REQUEST HELPERS ─────────────────────────────────────────────────────
+//
 
 let getCompanies = (location) => {
   logger.info('Get companies in ', location);
@@ -23,6 +24,16 @@ let getLocationInfo = (location) => {
   logger.info('Get Location: ', location);
   return db.models.Location.findOne({ name: location }).exec();
 };
+
+let checkCollections = () => {
+  console.log('Checking collections');
+  return db.conn.db.listCollections().toArray();
+};
+
+
+//
+// ─── SEARCH CACHING HELPERS ─────────────────────────────────────────────────────
+//
 
 let createLocationSearchCache = (location, companyList) => {
   let placePromises = [];
@@ -73,6 +84,13 @@ let createLocationSearchCache = (location, companyList) => {
   // logger.debug('Promises: ', placePromises);
   return Promise.all(placePromises.map(p => p.catch(() => undefined)));
 };
+
+// use this for search cache testing
+let getSearchCacheByLocation = location => db.models.NearbySearchCache.findOne({ location }).exec();
+
+//
+// ─── CRUNCHBASE HELPERS ─────────────────────────────────────────────────────────
+//
 
 let saveCrunchbaseCompanies = (crunchbaseData, searchLocation) => {
   let companies = crunchbaseData.data.items;
@@ -158,11 +176,6 @@ let matchAddressToCompanies = (location) => {
     .catch((err) => {
       logger.error(err);
     });
-};
-
-let checkCollections = () => {
-  console.log('Checking collections');
-  return db.conn.db.listCollections().toArray();
 };
 
 module.exports.getCompanies = getCompanies;

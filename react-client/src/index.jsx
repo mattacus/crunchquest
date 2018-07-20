@@ -30,6 +30,8 @@ class App extends React.Component {
       locations: [],
       activeLocation: {},
       dropdownActive: false,
+      dropdownDisabled: false,
+      dbEmpty: false,
     };
     this.handleCompanyClick = this.handleCompanyClick.bind(this);
     this.handleMarkerNameClick = this.handleMarkerNameClick.bind(this);
@@ -41,11 +43,18 @@ class App extends React.Component {
   }
 
   getCompanies() {
+    // disable location changing while company data loads
+    this.setState({ dropdownDisabled: true });
     axios.post('/companies', { location: this.state.activeLocation.name })
       .then((res) => {
         console.log('Got response from database: ', res.status);
         if (res.data.length !== 0) {
-          this.setState({ items: res.data, selectedCompany: res.data[0] }, () => {
+          this.setState({
+            items: res.data,
+            selectedCompany: res.data[0],
+            dbEmpty: false,
+            dropdownDisabled: false,
+          }, () => {
             console.log('Companies loaded into app state');
             console.log('Creating markers...');
             let markers = [];
@@ -63,6 +72,10 @@ class App extends React.Component {
           });
         } else {
           console.log('Err: Database is empty');
+          // temporary solution to handle empty database
+          this.setState({
+            dbEmpty: true,
+          });
         }
       })
       .catch((err) => {
@@ -75,7 +88,7 @@ class App extends React.Component {
     return axios.get('locations')
       .then((results) => {
         this.setState({
-          locations: results.data,
+          locations: results.data.slice(0, 1), // TODO: fix other locations, this temporarily loads just one!
           activeLocation: results.data[0],
         }, () => {
           this.getCompanies();
@@ -84,16 +97,6 @@ class App extends React.Component {
       .catch((err) => {
         console.log(err);
       });
-    // get api key
-    // axios.get('googleMapsAPIKey')
-    //   .then((res) => {
-    //     this.setState({
-    //       apiKey: res.data,
-    //     });
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //   });
   }
 
   handleCompanyClick(company) {
@@ -118,6 +121,9 @@ class App extends React.Component {
     this.setState({
       dropdownActive: !this.state.dropdownActive,
       activeLocation: loc,
+      items: [],
+      page: [],
+      mapMarkers: [],
       selectedCompany: {},
     }, () => {
       this.getCompanies(); // get companies from new location
@@ -147,7 +153,7 @@ class App extends React.Component {
             <LevelRight>
               <Content>
                 <Subtitle isSize={6} hasTextColor='light'><em>{`Currently viewing: ${this.state.activeLocation.name}`}</em></Subtitle>
-                <Dropdown isActive={this.state.dropdownActive}>
+                <Dropdown isActive={this.state.dropdownActive && !this.state.dropdownDisabled}>
                   <DropdownTrigger onClick={this.handleDropdownClick}>
                     <Button isOutlined>
                       <span>Choose Location</span>
@@ -174,7 +180,7 @@ class App extends React.Component {
         </HeroBody>
       </Hero>
     );
-    if (this.state.items.length) {
+    if (this.state.items.length && !this.state.dbEmpty) {
       return (
         <div>
           {heroElements}
@@ -212,13 +218,28 @@ class App extends React.Component {
             </div>
         </div>
       );
+    } else if (this.state.dbEmpty) {
+      return (
+        <div>
+          {heroElements}
+          <Level>
+            <LevelItem>
+              <Title isSize={2} hasTextColor='light'>
+              {`Err: no companies in db for ${this.state.activeLocation.name}`}
+              </Title>
+            </LevelItem>
+          </Level>
+        </div>
+      );
     } else { // loading view
       return (
         <div>
           {heroElements}
           <Level>
             <LevelItem>
-              <Title isSize={2} hasTextColor='light'>Loading companies from database...</Title>
+              <Title isSize={2} hasTextColor='light'>
+                {`Loading companies in ${this.state.activeLocation.name}`}
+              </Title>
             </LevelItem>
           </Level>
           <Level>
