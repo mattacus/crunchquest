@@ -3,6 +3,15 @@ A tool to visually explore CrunchBase companies in your area.
 
 <img width="1680" alt="crunchquest2" src="https://user-images.githubusercontent.com/15896597/43022949-b878df90-8c2e-11e8-9321-769839f98513.png">
 
+**Tools/Technologies Used**
+
+* React
+* [React Google Maps](https://tomchentw.github.io/react-google-maps/#introduction)
+* [Bulma](https://bulma.io/documentation/overview/) (+ [Bloomer](https://bloomer.js.org/#/documentation/overview/start) HOC's)
+* Node + Express
+* MongoDB + Mongoose
+* Webpack
+
 # Setup
 Run:
 ```sh
