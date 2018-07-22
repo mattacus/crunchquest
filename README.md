@@ -9,6 +9,7 @@ A tool to visually explore CrunchBase companies in your area.
 * [React Google Maps](https://tomchentw.github.io/react-google-maps/#introduction)
 * [Bulma](https://bulma.io/documentation/overview/) (+ [Bloomer](https://bloomer.js.org/#/documentation/overview/start) HOC's)
 * Node + Express
+* [Bunyan](https://www.npmjs.com/package/bunyan) for server logging
 * MongoDB + Mongoose
 * Webpack
 
