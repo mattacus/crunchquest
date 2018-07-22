@@ -1,4 +1,5 @@
 const logger = require('../server/logger');
+const tldjs = require('tldjs');
 
 // function to attempt correlation between Crunchbase & Google maps data
 let correlateMapData = (placeResults, company) => {
@@ -13,7 +14,6 @@ let correlateMapData = (placeResults, company) => {
     let { searchDetailsCache } = placeResults[i];
 
     if (searchDetailsCache.website) {
-
       // lowercase both urls
       let mapsName = searchDetailsCache.website.toLowerCase();
       let crunchName = company.homepage_url.toLowerCase();
@@ -64,4 +64,41 @@ let correlateMapData = (placeResults, company) => {
   return null; // nothing found
 };
 
-module.exports = correlateMapData;
+let correlateTLDJSMapData = (placeResults, company) => {
+  if (!placeResults.length) {
+    return undefined;
+  }
+  let locationDetails = {};
+  for (let i = 0; i < placeResults.length; i++) {
+    let { searchDetailsCache } = placeResults[i];
+
+    if (searchDetailsCache.website) {
+      // lowercase both urls
+      let mapsName = searchDetailsCache.website.toLowerCase();
+      let crunchName = company.homepage_url.toLowerCase();
+
+      // run through tldjs
+      mapsName = tldjs.parse(mapsName).domain;
+      crunchName = tldjs.parse(crunchName).domain;
+
+      logger.info(`Website retrieved for ${company.name}: ${searchDetailsCache.website}`);
+      logger.info('Maps website post-regex: ', mapsName);
+      logger.info('Crunchbase website: ', company.homepage_url);
+      logger.info('Crunchbase website post-regex: ', crunchName);
+      if (mapsName === crunchName) {
+        logger.info(`Found match for ${company.name}!`);
+        locationDetails = {
+          suggestedAddress: searchDetailsCache.url,
+          locationLatResult: String(searchDetailsCache.geometry.location.lat),
+          locationLngResult: String(searchDetailsCache.geometry.location.lng),
+          placeIDResult: String(searchDetailsCache.id),
+        };
+        return locationDetails; // return found match
+      }
+    }
+  }
+  return null;
+};
+
+module.exports.correlateMapData = correlateMapData;
+module.exports.correlateTLDJSMapData = correlateTLDJSMapData;

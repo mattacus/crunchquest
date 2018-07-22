@@ -2,7 +2,7 @@ const logger = require('../server/logger');
 const db = require('./models');
 require('dotenv').config();
 const Places = require('google-places-web').default;
-const correlateMapData = require('./mapDataCorrelator.js');
+const mp = require('./mapDataCorrelator.js');
 
 Places.apiKey = process.env.GOOGLE_MAPS_KEY;
 Places.debug = false;
@@ -139,7 +139,7 @@ let matchAddressToCompanies = (location) => {
         // let company = companies[i];
         db.models.NearbySearchCache.find({ company: company.name })
           .then((searchResults) => {
-            let locationDetails = correlateMapData(searchResults, company);
+            let locationDetails = mp.correlateTLDJSMapData(searchResults, company);
             if (locationDetails) {
               // logger.debug(locationDetails);
               successCount += 1;

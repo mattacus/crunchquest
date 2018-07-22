@@ -32,6 +32,7 @@ class App extends React.Component {
       dropdownActive: false,
       dropdownDisabled: false,
       dbEmpty: false,
+      shuffling: true,
     };
     this.handleCompanyClick = this.handleCompanyClick.bind(this);
     this.handleMarkerNameClick = this.handleMarkerNameClick.bind(this);
@@ -39,7 +40,20 @@ class App extends React.Component {
     this.handleDropdownItemClick = this.handleDropdownItemClick.bind(this);
     this.getCompanies = this.getCompanies.bind(this);
     this.onChangePage = this.onChangePage.bind(this);
-    this.handleToggleMapLabels = this.handleToggleMapLabels.bind(this);
+    this.handleShuffleClick = this.handleShuffleClick.bind(this);
+  }
+
+
+  // simple fisher-yates type shuffle
+  shuffleList(list) {
+    let _list = list.slice();
+    let shuffledList = [];
+    while (_list.length) {
+      let index = Math.floor((Math.random() * _list.length));
+      shuffledList.push(_list.splice(index, 1)[0]);
+    }
+
+    return shuffledList;
   }
 
   getCompanies() {
@@ -49,11 +63,13 @@ class App extends React.Component {
       .then((res) => {
         console.log('Got response from database: ', res.status);
         if (res.data.length !== 0) {
+          let companyList = this.shuffleList(res.data);
           this.setState({
-            items: res.data,
-            selectedCompany: res.data[0],
+            items: companyList,
+            selectedCompany: companyList[0],
             dbEmpty: false,
             dropdownDisabled: false,
+            shuffling: false,
           }, () => {
             console.log('Companies loaded into app state');
             console.log('Creating markers...');
@@ -130,12 +146,18 @@ class App extends React.Component {
     });
   }
 
-  onChangePage(pageOfItems) {
-    this.setState({ page: pageOfItems });
+  handleShuffleClick() {
+    this.setState({ shuffling: true }, () => {
+      let companyListNew = this.shuffleList(this.state.items);
+      this.setState({
+        items: companyListNew,
+        shuffling: false,
+      });
+    });
   }
 
-  handleToggleMapLabels() {
-    this.setState({ mapLabels: !this.state.mapLabels });
+  onChangePage(pageOfItems) {
+    this.setState({ page: pageOfItems });
   }
 
   render() {
@@ -150,6 +172,12 @@ class App extends React.Component {
                 <Title hasTextColor='light'>CrunchQuest</Title>
               </Content>
             </LevelLeft>
+            <LevelItem>
+              <Button isColor="primary" isLoading={this.state.shuffling} onClick={this.handleShuffleClick}>
+                <Icon icon="dice" isSize="small" />
+                <span>Randomize</span>
+              </Button>
+            </LevelItem>
             <LevelRight>
               <Content>
                 <Subtitle isSize={6} hasTextColor='light'><em>{`Currently viewing: ${this.state.activeLocation.name}`}</em></Subtitle>
