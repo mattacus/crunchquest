@@ -7,7 +7,7 @@ import {
   Nav, NavLeft, NavRight, NavCenter, NavItem, Button,
   Icon, Title, Subtitle, Column, Columns, Notification,
   Level, LevelItem, LevelLeft, LevelRight, Dropdown,
-  DropdownTrigger, DropdownMenu, DropdownItem, DropdownContent,
+  DropdownTrigger, DropdownMenu, DropdownItem, DropdownContent, Tag,
 } from 'bloomer';
 import { ClimbingBoxLoader } from 'react-spinners';
 
@@ -169,7 +169,16 @@ class App extends React.Component {
           <Level>
             <LevelLeft>
               <Content>
-                <Title hasTextColor='light'>CrunchQuest</Title>
+                <Title hasTextColor='light'>{'CrunchQuest'}</Title>
+              </Content>
+            </LevelLeft>
+            <LevelLeft>
+              <Content>
+                <div>
+                  <a href="https://github.com/mattacus/crunchquest">
+                    <Tag><Icon className="fab fa-github" /></Tag>
+                  </a>
+                </div>
               </Content>
             </LevelLeft>
             <LevelItem>
