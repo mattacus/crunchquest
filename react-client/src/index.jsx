@@ -5,9 +5,9 @@ import axios from 'axios';
 import {
   Container, Content, Box, Hero, HeroHeader, HeroBody,
   Nav, NavLeft, NavRight, NavCenter, NavItem, Button,
-  Icon, Title, Subtitle, Column, Columns, Notification,
+  Icon, Title, Subtitle, Notification, Tag,
   Level, LevelItem, LevelLeft, LevelRight, Dropdown,
-  DropdownTrigger, DropdownMenu, DropdownItem, DropdownContent, Tag,
+  DropdownTrigger, DropdownMenu, DropdownItem, DropdownContent,
 } from 'bloomer';
 import { ClimbingBoxLoader } from 'react-spinners';
 
@@ -223,7 +223,7 @@ class App extends React.Component {
           {heroElements}
             <div className="tile is-ancestor">
               <div className="tile is-4 is-vertical is-parent">
-                <div className="tile is-child box">
+                <div className="tile is-child">
                   <CompanyList items={this.state.page}
                     selectedCompany={this.state.selectedCompany}
                     handleCompanyClick={this.handleCompanyClick} />
@@ -231,12 +231,12 @@ class App extends React.Component {
                     <Pagination items={this.state.items} onChangePage={this.onChangePage} />
                   </Container>
                 </div>
-                <div className="tile is-child box">
+                <div className="tile is-child">
                   <CompanyInfo item={this.state.selectedCompany} />
                 </div>
               </div>
-              <div className="tile is-parent">
-                <div className="tile is-child box">
+            <div className="tile is-parent">
+              <div className="tile is-child">
                   <MarkerClusterMap
                     markers={this.state.mapMarkers}
                     mapLabels={this.state.mapLabels}
