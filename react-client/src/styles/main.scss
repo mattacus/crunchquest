@@ -10,9 +10,11 @@ $size-6: 0.9375rem;
 $size-7: .85rem;
 $body-size: 1rem;
 
+
 @import "../../../node_modules/bulma/bulma";
 
 @import "../../../node_modules/bulmaswatch/darkly/_overrides.scss";
+
 
 // override map InfoWindow styles
 .gm-style .gm-style-iw + div {
@@ -23,4 +25,9 @@ $body-size: 1rem;
 }
 .gm-style-iw {
   text-align: center;
+}
+
+.media-content {
+  max-width: 100%;
+  word-wrap: break-word;
 }
