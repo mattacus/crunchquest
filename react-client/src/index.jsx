@@ -167,24 +167,31 @@ class App extends React.Component {
         </HeroHeader>
         <HeroBody>
           <Level>
-            <LevelLeft>
-              <Content>
+            <Content>
+              <LevelLeft>
                 <Title hasTextColor='light'>{'CrunchQuest'}</Title>
-              </Content>
-            </LevelLeft>
-            <LevelLeft>
-              <Content>
-                <div>
-                  <a href="https://github.com/mattacus/crunchquest">
-                    <Tag><Icon className="fab fa-github" /></Tag>
-                  </a>
-                </div>
-              </Content>
-            </LevelLeft>
+                <Content>
+                  <div>
+                    <a href="https://github.com/mattacus/crunchquest">
+                      <Tag><Icon className="fab fa-github" /></Tag>
+                    </a>
+                  </div>
+                </Content>
+              </LevelLeft>
+              <LevelLeft>
+                <Content>
+                  <p><em>
+                  * The react-google-maps components on this page have performance issues that I am aware of and currently investigating.
+                  <br />
+                  In the meantime, you may need to reload a couple times.
+                  </em></p>
+                </Content>
+              </LevelLeft>
+            </Content>
             <LevelItem>
               <Button isColor="primary" isLoading={this.state.shuffling} onClick={this.handleShuffleClick}>
                 <Icon icon="dice" isSize="small" />
-                <span>Randomize</span>
+                <span>Randomize List</span>
               </Button>
             </LevelItem>
             <LevelRight>
