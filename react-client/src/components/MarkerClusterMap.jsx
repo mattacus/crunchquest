@@ -27,6 +27,10 @@ class MarkerClusterMap extends React.Component {
     this.props.handleMarkerNameClick(company);
   }
 
+  infoOnClick(name) {
+    this.onTitleClick(name);
+  }
+
   render() {
     return (
       <GoogleMap
@@ -40,16 +44,20 @@ class MarkerClusterMap extends React.Component {
           enableRetinaIcons
           gridSize={60}
         >
-          {this.props.markers.length ? this.props.markers.map(marker => (
-            <Marker
-              key={marker.id}
-              position={{ lat: marker.latitude, lng: marker.longitude }}
-            >
-              {this.state.isOpen && <InfoWindow defaultOptions={{ disableAutoPan: true }}>
-                <a onClick={() => { this.onTitleClick(marker.name); }}>{marker.name}</a>
-              </InfoWindow>}
-            </Marker>
-          )) : <div></div>}
+          {this.props.markers.length ? this.props.markers.map((marker) => {
+            const infoOnClick = this.infoOnClick.bind(this, marker.name);
+            return (
+              <Marker
+                key={marker.id}
+                position={{ lat: marker.latitude, lng: marker.longitude }}
+              >
+                {this.state.isOpen && <InfoWindow defaultOptions={{ disableAutoPan: true }}>
+                  <a onClick={infoOnClick}>{marker.name}</a>
+                </InfoWindow>}
+              </Marker>
+            )
+          })
+          : <div></div>}
         </MarkerClusterer>
       </GoogleMap>
     );

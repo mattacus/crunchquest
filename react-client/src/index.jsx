@@ -180,11 +180,11 @@ class App extends React.Component {
               </LevelLeft>
               <LevelLeft>
                 <Content>
-                  <p><em>
+                  {/* <p><em>
                   * The react-google-maps components on this page have performance issues that I am aware of and currently investigating.
                   <br />
                   In the meantime, you may need to reload a couple times.
-                  </em></p>
+                  </em></p> */}
                 </Content>
               </LevelLeft>
             </Content>
