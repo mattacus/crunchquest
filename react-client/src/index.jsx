@@ -178,15 +178,6 @@ class App extends React.Component {
                   </div>
                 </Content>
               </LevelLeft>
-              <LevelLeft>
-                <Content>
-                  <p><em>
-                  * The react-google-maps components on this page have performance issues that I am aware of and currently investigating.
-                  <br />
-                  In the meantime, you may need to reload a couple times.
-                  </em></p>
-                </Content>
-              </LevelLeft>
             </Content>
             <LevelItem>
               <Button isColor="primary" isLoading={this.state.shuffling} onClick={this.handleShuffleClick}>
